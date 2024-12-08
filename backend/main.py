@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from shared.exceptions import ApiError, BaseHTTPException, ValidationFailed
 
+
 app = FastAPI()
 
 @app.exception_handler(BaseHTTPException)
