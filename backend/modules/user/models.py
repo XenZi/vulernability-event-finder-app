@@ -8,5 +8,5 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String(255), unique=True, index=True)
     password = Column(String(255))
-    isActive = Column(Boolean, default=True)
+    isActive = Column(Boolean, default=False)
     creationDate = Column(DateTime, server_default=func.now())

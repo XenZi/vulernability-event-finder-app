@@ -7,21 +7,9 @@ from sqlalchemy.orm import sessionmaker
 DATABASE_URL = 'mysql://root:root@localhost:3306/vulnerability_finder'
 # Create SQLAlchemy engine
 engine = create_engine(DATABASE_URL)
-
-try:
-    # Use your MySQL credentials here
-    engine = create_engine('mysql://root:root@localhost:3306/vulnerability_finder')
-    connection = engine.connect()
-    print("Connection successful!")
-    connection.close()
-except Exception as e:
-    print(f"Connection error: {e}")
-
-
-
-
     
-# Create a sessionmaker to manage sessions
+
+# Create session factory
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Base class for models

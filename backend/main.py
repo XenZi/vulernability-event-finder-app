@@ -4,22 +4,25 @@ from pydantic import BaseModel
 from typing import List
 from sqlalchemy.orm import Session
 from shared.database import SessionLocal, engine
-from user.repository import UserRepository
-from user.schemas import UserCreate, UserResponse
-from shared.exceptions import ApiError, BaseHTTPException, ValidationFailed, DuplicateEntity, EntityNotFound
+from modules.user.schemas import UserCreate, UserResponse
+from shared.exceptions import ApiError, BaseHTTPException
+from modules.router import api_router
+from fastapi.middleware.cors import CORSMiddleware
+
 
 
 app = FastAPI()
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close() 
+app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
-def get_user_repository(db: Session):
-    return UserRepository(db)
+app.include_router(api_router)
+
 
 
 @app.exception_handler(BaseHTTPException)
@@ -34,40 +37,4 @@ async def handle_all_exceptions(request: Request, exc: BaseHTTPException):
 @app.get("/")
 async def root():
     return {"message": "Hello Worlds"}
-
-
-# Register user route
-@app.post("/register/", response_model=UserResponse)
-def register_user(user: UserCreate, db: Session = Depends(get_db)):
-    user_repo = get_user_repository(db)
-    if user_repo.get_user_by_email(user.email):
-        raise DuplicateEntity(400, "Email already taken")
-    new_user = user_repo.create_user(user)
-    return new_user
-
-# Get all users
-@app.get("/users/", response_model=list[UserResponse])
-def get_users(db: Session = Depends(get_db)):
-    user_repo = get_user_repository(db)
-    return user_repo.get_all_users()
-
-# Deactivate a user
-@app.patch("/activate/{user_id}", response_model=UserResponse)
-def deactivate_user(user_id: int, db: Session = Depends(get_db)):
-    user_repo = get_user_repository(db)
-    user = user_repo.deactivate_user(user_id)
-    if not user:
-        raise EntityNotFound(404, "User not found")
-    return user
-
-@app.get("/users/{email}", response_model=UserResponse)
-def find_user_by_email(email: str, db: Session = Depends(get_db)):
-    user_repo = get_user_repository(db)
-    user = user_repo.get_user_by_email(email)
-    if not user:
-        raise EntityNotFound(404, "User not found")
-    return user
-
-
-
 
