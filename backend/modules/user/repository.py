@@ -1,13 +1,10 @@
 from http.client import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import text
-from modules.user.models import User
-from modules.user.schemas import UserCreate
-from datetime import datetime
-from shared.security import get_password_hash
+from modules.user.schemas import User
 from sqlalchemy.exc import SQLAlchemyError
 
-def create_user(session: Session, user: UserCreate) -> User:
+def create_user(session: Session, user: User) -> User:
     """
     Inserts a new user record into the database and returns the created user object.
     

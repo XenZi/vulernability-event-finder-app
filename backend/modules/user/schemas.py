@@ -1,21 +1,21 @@
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 from datetime import datetime
 
-class UserBase(BaseModel):
+
+
+class User(BaseModel): # kreirani user punih informacija
+    id: int = None
     email: str
-    isActive: bool = False
-    creationDate: datetime = None
-
-
-class UserCreate(UserBase):
     password: str
+    isActive: bool
+    creationDate: datetime
+
+class UserDTO(BaseModel):
+    id: int
+    email: str
+    isActive: bool
+    creationDate: datetime
 
 class UserRegister(BaseModel):
     email: str
     password: str
-
-
-class UserResponse(UserBase):
-    id: int
-    password: str
-

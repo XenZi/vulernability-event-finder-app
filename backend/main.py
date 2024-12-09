@@ -1,10 +1,5 @@
-from fastapi import FastAPI, Request, Depends
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
-from typing import List
-from sqlalchemy.orm import Session
-from shared.database import SessionLocal, engine
-from modules.user.schemas import UserCreate, UserResponse
 from shared.exceptions import ApiError, BaseHTTPException
 from modules.router import api_router
 from fastapi.middleware.cors import CORSMiddleware
