@@ -12,4 +12,3 @@ class Settings(BaseSettings):
     database_uri: str
 
 settings = Settings()  # type: ignore
-# Use the settings object to access `database_uri`

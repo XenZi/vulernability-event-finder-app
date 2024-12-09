@@ -1,10 +1,10 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-
+from config.config import settings
 
 # Example connection string
-DATABASE_URL = 'mysql://root:root@localhost:3306/vulnerability_finder'
+DATABASE_URL = settings.database_uri
 # Create SQLAlchemy engine
 engine = create_engine(DATABASE_URL)
     
