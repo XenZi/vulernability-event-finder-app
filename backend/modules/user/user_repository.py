@@ -1,7 +1,7 @@
 from http.client import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import text
-from modules.user.schemas import User
+from modules.user.user_schemas import User
 from sqlalchemy.exc import SQLAlchemyError
 
 def create_user(session: Session, user: User) -> User:
@@ -83,11 +83,38 @@ def create_user(session: Session, user: User) -> User:
         session.close()
 
 def get_user_by_email(session: Session, email: str) -> User | None:
-    select_query = text("""SELECT * FROM user WHERE email=:email LIMIT 1""")
-    result = session.execute(select_query, {"email": email}).first()
-    return result
+    try:
+        select_query = text("""SELECT * FROM user WHERE email=:email LIMIT 1""")
+        result = session.execute(select_query, {"email": email}).first()
+        return result
+    except SQLAlchemyError as e:
+        raise HTTPException(500, f"Database error: {str(e)}")
+    except Exception as e:
+        raise HTTPException(500, f"Unexpected error: {str(e)}")
+    finally:
+        session.close()
 
 def get_user_by_id(session: Session, id: int) -> User | None:
-    select_query = text("""SELECT * FROM user WHERE id=:id LIMIT 1""")
-    result = session.execute(select_query, {"id": id}).first()
-    return result
+    try: 
+        select_query = text("""SELECT * FROM user WHERE id=:id LIMIT 1""")
+        result = session.execute(select_query, {"id": id}).first()
+        return result
+    except SQLAlchemyError as e:
+        raise HTTPException(500, f"Database error: {str(e)}")
+    except Exception as e:
+        raise HTTPException(500, f"Unexpected error: {str(e)}")
+    finally:
+        session.close()
+
+
+def get_all_users(session: Session) -> list[User] | None:
+    try:
+        select_query = text("""SELECT * FROM user""")
+        result = session.execute(select_query).fetchall()
+        return result
+    except SQLAlchemyError as e:
+        raise HTTPException(500, f"Database error: {str(e)}")
+    except Exception as e:
+        raise HTTPException(500, f"Unexpected error: {str(e)}")
+    finally:
+        session.close()

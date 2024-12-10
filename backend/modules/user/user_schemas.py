@@ -3,7 +3,11 @@ from datetime import datetime
 
 
 
-class User(BaseModel): # kreirani user punih informacija
+class UserRegister(BaseModel):
+    email: str
+    password: str
+
+class User(BaseModel): 
     id: int = None
     email: str
     password: str
@@ -16,6 +20,3 @@ class UserDTO(BaseModel):
     isActive: bool
     creationDate: datetime
 
-class UserRegister(BaseModel):
-    email: str
-    password: str

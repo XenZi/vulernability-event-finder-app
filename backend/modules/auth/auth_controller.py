@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 from sqlalchemy.orm import Session
-from modules.user.schemas import UserDTO, UserRegister
+from modules.user.user_schemas import UserDTO, UserRegister
 from typing import Annotated
 from modules.auth import auth_service as auth_service
 from fastapi import Depends
-from modules.deps import get_db
+from modules.dependencies import get_db
 router = APIRouter()
 
 @router.post("/register/", response_model=UserDTO)
