@@ -10,3 +10,7 @@ router = APIRouter()
 @router.post("/register/", response_model=UserDTO)
 def register(session: Annotated[Session, Depends(get_db)], user_in: UserRegister) -> UserDTO:
     return auth_service.register_user(session, user_in)
+
+@router.get("/activate/{token}")
+def activate_account(session: Annotated[Session, Depends(get_db)], token: str) -> UserDTO:
+    return auth_service.activate_account(session, token)

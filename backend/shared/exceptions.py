@@ -1,7 +1,5 @@
 import datetime
-from typing import Callable
-from fastapi import HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi import HTTPException
 from pydantic import BaseModel
 
 class ApiError(BaseModel):
@@ -25,6 +23,10 @@ class EntityNotFound(BaseHTTPException):
         super().__init__(status_code, detail, headers)
 
 class DuplicateEntity(BaseHTTPException):
+    def __init__(self, status_code, detail=None, headers=None):
+        super().__init__(status_code, detail, headers)
+
+class InvalidToken(BaseHTTPException):
     def __init__(self, status_code, detail=None, headers=None):
         super().__init__(status_code, detail, headers)
 

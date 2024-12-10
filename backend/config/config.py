@@ -10,5 +10,8 @@ class Settings(BaseSettings):
     )
 
     database_uri: str
+    secret_key: str
+    mail_email: str
+    mail_psw: str
 
 settings = Settings()  # type: ignore

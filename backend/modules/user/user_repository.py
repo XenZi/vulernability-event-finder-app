@@ -94,6 +94,18 @@ def get_user_by_email(session: Session, email: str) -> User | None:
     finally:
         session.close()
 
+def activate_user(session: Session, email: str):
+    try:
+        activate_query = text("""UPDATE user SET isActive = :isActive WHERE email = :email""")
+        session.execute(activate_query, {"isActive": True, "email": email})
+        session.commit()
+    except SQLAlchemyError as e:
+        raise HTTPException(500, f"Database error: {str(e)}")
+    except Exception as e:
+        raise HTTPException(500, f"Unexpected error: {str(e)}")
+    finally:
+        session.close()
+
 def get_user_by_id(session: Session, id: int) -> User | None:
     try: 
         select_query = text("""SELECT * FROM user WHERE id=:id LIMIT 1""")

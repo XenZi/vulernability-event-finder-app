@@ -3,3 +3,4 @@ mysqlclient
 pydantic
 pydantic_settings
 sqlalchemy
+itsdangerous
