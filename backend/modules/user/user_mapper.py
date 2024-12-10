@@ -1,7 +1,5 @@
 from modules.user.user_schemas import User, UserDTO
 
-
-
 def user_to_DTO(user: User) -> UserDTO:
     return UserDTO(
             id=user.id,

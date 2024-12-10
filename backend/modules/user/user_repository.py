@@ -95,6 +95,32 @@ def get_user_by_email(session: Session, email: str) -> User | None:
         session.close()
 
 def activate_user(session: Session, email: str):
+    """
+    Activates a user in the database by setting their 'isActive' status to True.
+
+    This function executes an SQL UPDATE query to set the 'isActive' column of the 
+    'user' table to True for the specified email address. If the operation is successful, 
+    the changes are committed to the database. If any errors occur, an HTTPException 
+    is raised with a relevant error message.
+
+    Args:
+        session (Session): The SQLAlchemy session object used to interact with the database.
+        email (str): The email address of the user to be activated.
+
+    Raises:
+        HTTPException: If a database error or an unexpected error occurs during the execution.
+            The error message will contain the details of the exception.
+
+    Example:
+        To activate a user with the email "user@example.com":
+        
+        activate_user(session, "user@example.com")
+
+    Notes:
+        - This function assumes that the `user` table exists in the database with at least 
+          the 'email' and 'isActive' columns.
+        - The session will be closed after the operation is completed, regardless of success or failure.
+    """
     try:
         activate_query = text("""UPDATE user SET isActive = :isActive WHERE email = :email""")
         session.execute(activate_query, {"isActive": True, "email": email})
