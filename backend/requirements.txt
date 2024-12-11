@@ -4,3 +4,5 @@ pydantic
 pydantic_settings
 sqlalchemy
 itsdangerous
+PyJWT
+passlib[bcrypt]

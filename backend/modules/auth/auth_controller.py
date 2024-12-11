@@ -1,3 +1,5 @@
+from shared.response_schemas import SuccessfulTokenPayload
+from modules.auth.schemas import UserLogin, Token
 from fastapi import APIRouter
 from sqlalchemy.orm import Session
 from modules.user.user_schemas import UserDTO, UserRegister
@@ -14,3 +16,7 @@ def register(session: Annotated[Session, Depends(get_db)], user_in: UserRegister
 @router.get("/activate/{token}")
 def activate_account(session: Annotated[Session, Depends(get_db)], token: str) -> UserDTO:
     return auth_service.activate_account(session, token)
+
+@router.post("/login", response_model=SuccessfulTokenPayload)
+def login(session: Annotated[Session, Depends(get_db)], login_data: UserLogin) -> SuccessfulTokenPayload:
+    return auth_service.login(session, login_data)

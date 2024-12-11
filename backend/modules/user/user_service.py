@@ -1,4 +1,4 @@
-from modules.user.user_schemas import UserDTO
+from modules.user.user_schemas import User, UserDTO
 from sqlalchemy.orm import Session
 from modules.user import user_repository
 from modules.user import user_mapper as mapper
@@ -6,11 +6,11 @@ from shared.exceptions import EntityNotFound
 
 
     
-def get_user_by_email(session: Session, email: str) -> UserDTO | None:
+def get_user_by_email(session: Session, email: str) -> User | None:
     result = user_repository.get_user_by_email(session, email)
     if not result:
         return result
-    return mapper.user_to_DTO(result)
+    return result
 
 def get_user_by_id(session: Session, id: int) -> UserDTO:
     result = user_repository.get_user_by_id(session, id)

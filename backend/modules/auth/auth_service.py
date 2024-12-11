@@ -1,9 +1,12 @@
+from shared.response_schemas import SuccessfulTokenPayload
+from modules.auth import jwt_service
+from modules.auth.schemas import UserLogin
 from modules.user.user_schemas import User, UserDTO, UserRegister
 from sqlalchemy.orm import Session
 from datetime import datetime
 from modules.user import user_repository
-from shared.exceptions import DuplicateEntity, InvalidToken, EntityNotFound
-from modules.auth import auth_password_service as psw_service
+from shared.exceptions import AuthenticationFailedException, DuplicateEntity, InvalidToken, EntityNotFound
+from modules.auth import password_service
 from modules.user.user_mapper import user_to_DTO
 from modules.user import user_service
 from shared.token import serializer, SALT
@@ -41,7 +44,7 @@ def register_user(session: Session, user: UserRegister) -> UserDTO:
         - The user's password is hashed using a password hashing service before storing it in the database.
         - The `send_activation_token` function is called to send an activation email to the user.
         - The user is initially set as inactive (`isActive=False`).
-        - This function assumes the existence of `user_service`, `user_repository`, `psw_service`, and other dependencies.
+        - This function assumes the existence of `user_service`, `user_repository`, `password_service`, and other dependencies.
     """
     doesUserExist: UserDTO | None = user_service.get_user_by_email(session, user.email)
     if doesUserExist:
@@ -49,15 +52,21 @@ def register_user(session: Session, user: UserRegister) -> UserDTO:
     
     user_db = User(
         email=user.email,
-        password=psw_service.get_password_hash(user.password),
+        password=password_service.get_password_hash(user.password),
         isActive=False,
         creationDate=datetime.now()
     )
     result = user_repository.create_user(session, user_db)
-    print(result)
     send_activation_token(user)
     return user_to_DTO(result)
 
+def login(session: Session, login_data: UserLogin) -> str:
+    user = user_service.get_user_by_email(session, login_data.email)
+    valid_credentials = password_service.compare_password(login_data.password, user.password)
+    if not valid_credentials:
+        raise AuthenticationFailedException(401, "Authentication failed. Invalid username or password")
+    token = jwt_service.generate_jwt({"id":user.id, "email": user.email})
+    return SuccessfulTokenPayload(token=token)
 
 def activate_account(session: Session, token: str) -> UserDTO:
     """

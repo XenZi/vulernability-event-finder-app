@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     secret_key: str
     mail_email: str
     mail_psw: str
-    token_salt: str
+    mail_token_salt: str
+    password_algorithm: str
+    access_token_expire_minutes: int
 
 settings = Settings()  # type: ignore
