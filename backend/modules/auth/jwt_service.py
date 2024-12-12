@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional
 from modules.auth.schemas import TokenData
 from config.config import settings
+
 def generate_jwt(
     payload: Dict[str, Any],
 ) -> str:
