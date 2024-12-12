@@ -33,18 +33,6 @@ def register_user(session: Session, user: UserRegister) -> UserDTO:
 
     Raises:
         DuplicateEntity: If the email address is already registered in the system (HTTP status 400).
-
-    Example:
-        To register a new user with email "user@example.com" and password "securepassword":
-        
-        new_user = UserRegister(email="user@example.com", password="securepassword")
-        user_dto = register_user(session, new_user)
-
-    Notes:
-        - The user's password is hashed using a password hashing service before storing it in the database.
-        - The `send_activation_token` function is called to send an activation email to the user.
-        - The user is initially set as inactive (`isActive=False`).
-        - This function assumes the existence of `user_service`, `user_repository`, `password_service`, and other dependencies.
     """
     doesUserExist: UserDTO | None = user_service.get_user_by_email(session, user.email)
     if doesUserExist:
@@ -61,6 +49,19 @@ def register_user(session: Session, user: UserRegister) -> UserDTO:
     return user_to_DTO(result)
 
 def login(session: Session, login_data: UserLogin) -> str:
+    """
+    Authenticates a user and generates a JWT token upon successful login.
+
+    Args:
+        session (Session): The database session used to query user information.
+        login_data (UserLogin): The login data provided by the user, including email and password.
+
+    Returns:
+        str: A JWT token encapsulated in a `SuccessfulTokenPayload` object.
+
+    Raises:
+        AuthenticationFailedException: Raised if the user credentials are invalid.
+    """
     user = user_service.get_user_by_email(session, login_data.email)
     valid_credentials = password_service.compare_password(login_data.password, user.password)
     if not valid_credentials:
@@ -88,17 +89,6 @@ def activate_account(session: Session, token: str) -> UserDTO:
     Raises:
         EntityNotFound: If no user with the decoded email is found in the database (HTTP status 404).
         InvalidToken: If the token is invalid, expired, or cannot be decoded (HTTP status 400).
-
-    Example:
-        To activate a user's account with an activation token:
-        
-        token = "some-valid-activation-token"
-        user_dto = activate_account(session, token)
-
-    Notes:
-        - The activation token is serialized using a salt value (`SALT`), and expires after 15 minutes (900 seconds).
-        - This function assumes the existence of `user_service`, `user_repository`, and the `serializer` object for decoding the token.
-        - The token is expected to contain the user's email address, and the `user_repository.activate_user` function is used to update the user's status in the database.
     """
     try:
         email = serializer.loads(token, salt=SALT, max_age=900)
@@ -108,8 +98,11 @@ def activate_account(session: Session, token: str) -> UserDTO:
         user_repository.activate_user(session, email)
         doesUserExist.isActive = True
         return doesUserExist
+    except EntityNotFound:
+        raise
     except Exception as e:
-        raise InvalidToken(400, "Invalid or expired token")
+        raise InvalidToken(400, "Invalid or expired token") from e
+
     
 
 
