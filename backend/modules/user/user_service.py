@@ -6,7 +6,7 @@ from modules.user import user_mapper as mapper
 from shared.exceptions import EntityNotFound
 
 
-def get_user_by_email_as_entity(session: Session, email: str) -> User :
+def get_user_by_email_as_entity(session: Session, email: str) -> User | None:
     """
     Retrieve a user by email. Returns either a User object or UserDTO based on the 'dto' flag.
 
@@ -18,10 +18,10 @@ def get_user_by_email_as_entity(session: Session, email: str) -> User :
     """
     user = user_repository.get_user_by_email(session=session, email=email)
     if not user:
-        raise EntityNotFound(404, "User not found")
+        return None
     return user
 
-def get_user_by_email_as_dto(session: Session, email: str) -> UserDTO:
+def get_user_by_email_as_dto(session: Session, email: str) -> UserDTO | None:
     """
     Retrieve a user by email. Returns either a User object or UserDTO based on the 'dto' flag.
 
@@ -33,7 +33,7 @@ def get_user_by_email_as_dto(session: Session, email: str) -> UserDTO:
     """
     user = user_repository.get_user_by_email(session=session, email=email)
     if not user:
-        raise EntityNotFound(404, "User not found")
+        return None
     return mapper.user_to_DTO(user=user)
 
 

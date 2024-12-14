@@ -35,7 +35,7 @@ def register_user(session: Session, user: UserRegister) -> UserDTO:
     Raises:
         DuplicateEntity: If the email address is already registered in the system (HTTP status 400).
     """
-    doesUserExist: UserDTO | User = user_service.get_user_by_email_as_dto(session, user.email)
+    doesUserExist: UserDTO | None = user_service.get_user_by_email_as_dto(session, user.email)
     if doesUserExist:
         raise DuplicateEntity(400, "Email already taken")
     
@@ -64,6 +64,10 @@ def login(session: Session, login_data: UserLogin) -> SuccessfulTokenPayload:
         AuthenticationFailedException: Raised if the user credentials are invalid.
     """
     user = user_service.get_user_by_email_as_entity(session, login_data.email)
+    if not user:
+        raise EntityNotFound(400, 'Not found')
+    if not user.isActive:
+        raise AuthenticationFailedException(401, 'User account is not validated yet.')
     valid_credentials = password_service.compare_password(login_data.password, user.password)
     if not valid_credentials:
         raise AuthenticationFailedException(401, "Authentication failed. Invalid username or password")
@@ -93,7 +97,7 @@ def activate_account(session: Session, token: str) -> UserDTO:
     """
     try:
         email = serializer.loads(token, salt=SALT, max_age=900)
-        doesUserExist: UserDTO = user_service.get_user_by_email_as_dto(session, email)
+        doesUserExist: UserDTO | None = user_service.get_user_by_email_as_dto(session, email)
         if not doesUserExist:
             raise EntityNotFound(404, "User not found")
         user_repository.activate_user(session, email)

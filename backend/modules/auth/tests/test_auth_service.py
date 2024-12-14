@@ -17,7 +17,7 @@ class TestAuthFunctions(unittest.TestCase):
     def setUp(self):
         self.session = MagicMock(spec=Session)
 
-    @patch("modules.user.user_service.get_user_by_email")
+    @patch("modules.user.user_service.get_user_by_email_as_entity")
     @patch("modules.auth.password_service.compare_password")
     @patch("modules.auth.jwt_service.generate_jwt")
     def test_login_success(self, mock_generate_jwt, mock_compare_password, mock_get_user_by_email):
@@ -33,7 +33,7 @@ class TestAuthFunctions(unittest.TestCase):
         self.assertIsInstance(result, SuccessfulTokenPayload)
         self.assertEqual(result.token, "mocked_token")
 
-    @patch("modules.user.user_service.get_user_by_email")
+    @patch("modules.user.user_service.get_user_by_email_as_entity")
     @patch("modules.auth.password_service.compare_password")
     def test_login_failure_invalid_credentials(self, mock_compare_password, mock_get_user_by_email):
         login_data = UserLogin(email="test@example.com", password="wrong_password")
@@ -45,7 +45,7 @@ class TestAuthFunctions(unittest.TestCase):
         with self.assertRaises(AuthenticationFailedException):
             login(self.session, login_data)
 
-    @patch("modules.user.user_service.get_user_by_email")
+    @patch("modules.user.user_service.get_user_by_email_as_dto")
     @patch("modules.user.user_repository.create_user")
     @patch("modules.mail.mail_service.send_activation_token")
     @patch("modules.auth.password_service.get_password_hash")
@@ -60,7 +60,7 @@ class TestAuthFunctions(unittest.TestCase):
         self.assertIsInstance(result, UserDTO)
         self.assertEqual(result.email, "test@example.com")
 
-    @patch("modules.user.user_service.get_user_by_email")
+    @patch("modules.user.user_service.get_user_by_email_as_dto")
     def test_register_user_duplicate_email(self, mock_get_user_by_email):
         user_data = UserRegister(email="test@example.com", password="password123")
         mock_get_user_by_email.return_value = UserDTO(id=1, email="test@example.com", isActive=False, creationDate=datetime.now(timezone.utc))
@@ -68,7 +68,7 @@ class TestAuthFunctions(unittest.TestCase):
         with self.assertRaises(DuplicateEntity):
             register_user(self.session, user_data)
 
-    @patch("modules.user.user_service.get_user_by_email")
+    @patch("modules.user.user_service.get_user_by_email_as_dto")
     @patch("modules.user.user_repository.activate_user")
     @patch("shared.token.serializer.loads")
     def test_activate_account_success(self, mock_serializer_loads, mock_activate_user, mock_get_user_by_email):
@@ -89,7 +89,7 @@ class TestAuthFunctions(unittest.TestCase):
             activate_account(self.session, "invalid_token")
 
     @patch("shared.token.serializer.loads")
-    @patch("modules.user.user_service.get_user_by_email")
+    @patch("modules.user.user_service.get_user_by_email_as_dto")
     def test_activate_account_user_not_found(self, mock_get_user_by_email, mock_serializer_loads):
         mock_serializer_loads.return_value = "test@example.com"
         mock_get_user_by_email.return_value = None

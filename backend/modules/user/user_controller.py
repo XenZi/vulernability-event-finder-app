@@ -11,9 +11,6 @@ router = APIRouter(prefix="/users")
 
 
 
-@router.get("/{email}/", response_model=UserDTO)
-def get_user_by_email(session: Annotated[Session, Depends(get_db)], email: str) -> UserDTO:
-    return user_service.get_user_by_email_as_dto(session, email)
 
 @router.get("/id/{id}", response_model=UserDTO)
 def get_user_by_id(session: Annotated[Session, Depends(get_db)], id: int) -> UserDTO:
