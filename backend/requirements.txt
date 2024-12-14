@@ -6,3 +6,4 @@ sqlalchemy
 itsdangerous
 PyJWT
 passlib[bcrypt]
+loguru
