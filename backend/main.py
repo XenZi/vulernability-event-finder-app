@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from shared.exceptions import ApiError, BaseHTTPException
 from modules.router import api_router
 from fastapi.middleware.cors import CORSMiddleware
-
+from shared.middlewares import LoggingMiddleware
 
 
 app = FastAPI()
@@ -17,7 +17,7 @@ app.add_middleware(
     )
 
 app.include_router(api_router)
-
+app.add_middleware(LoggingMiddleware)
 
 
 @app.exception_handler(BaseHTTPException)
