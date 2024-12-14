@@ -1,3 +1,4 @@
+from sqlalchemy import true
 from shared.response_schemas import SuccessfulTokenPayload
 from modules.auth import jwt_service
 from modules.auth.schemas import UserLogin
@@ -34,7 +35,7 @@ def register_user(session: Session, user: UserRegister) -> UserDTO:
     Raises:
         DuplicateEntity: If the email address is already registered in the system (HTTP status 400).
     """
-    doesUserExist: UserDTO | None = user_service.get_user_by_email(session, user.email)
+    doesUserExist: UserDTO | User = user_service.get_user_by_email_as_dto(session, user.email)
     if doesUserExist:
         raise DuplicateEntity(400, "Email already taken")
     
@@ -48,7 +49,7 @@ def register_user(session: Session, user: UserRegister) -> UserDTO:
     send_activation_token(user)
     return user_to_DTO(result)
 
-def login(session: Session, login_data: UserLogin) -> str:
+def login(session: Session, login_data: UserLogin) -> SuccessfulTokenPayload:
     """
     Authenticates a user and generates a JWT token upon successful login.
 
@@ -62,7 +63,7 @@ def login(session: Session, login_data: UserLogin) -> str:
     Raises:
         AuthenticationFailedException: Raised if the user credentials are invalid.
     """
-    user = user_service.get_user_by_email(session, login_data.email)
+    user = user_service.get_user_by_email_as_entity(session, login_data.email)
     valid_credentials = password_service.compare_password(login_data.password, user.password)
     if not valid_credentials:
         raise AuthenticationFailedException(401, "Authentication failed. Invalid username or password")
@@ -92,7 +93,7 @@ def activate_account(session: Session, token: str) -> UserDTO:
     """
     try:
         email = serializer.loads(token, salt=SALT, max_age=900)
-        doesUserExist: UserDTO | None = user_service.get_user_by_email(session, email)
+        doesUserExist: UserDTO = user_service.get_user_by_email_as_dto(session, email)
         if not doesUserExist:
             raise EntityNotFound(404, "User not found")
         user_repository.activate_user(session, email)

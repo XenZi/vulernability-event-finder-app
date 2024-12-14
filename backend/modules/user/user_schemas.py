@@ -8,7 +8,7 @@ class UserRegister(BaseModel):
     password: str
 
 class User(BaseModel): 
-    id: int = None
+    id: int | None = None
     email: str
     password: str
     isActive: bool

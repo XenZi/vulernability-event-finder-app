@@ -4,6 +4,8 @@ from sqlalchemy import text
 from modules.user.user_schemas import User
 from sqlalchemy.exc import SQLAlchemyError
 
+from shared.exceptions import EntityNotFound
+
 def create_user(session: Session, user: User) -> User:
     """
     Inserts a new user record into the database and returns the created user object.
@@ -32,18 +34,6 @@ def create_user(session: Session, user: User) -> User:
         HTTPException: If an error occurs during the database operation. Possible scenarios include:
             - Insertion fails (HTTP status 500 with a "Database error" message).
             - Unexpected errors (HTTP status 500 with an "Unexpected error" message).
-    
-    Example:
-        >>> session = Session()
-        >>> user = User(email="test@example.com", password="hashed_pw", isActive=True, creationDate=datetime.now())
-        >>> new_user = create_user(session, user)
-        >>> print(new_user.id, new_user.email)
-    
-    Notes:
-        - Make sure to handle hashed passwords properly before calling this function.
-        - Use `sessionmaker` to manage sessions and ensure proper session lifecycle management.
-        - The function uses `SELECT LAST_INSERT_ID()` to retrieve the last inserted ID, 
-          which is specific to MySQL. Ensure compatibility if switching to another database.
     """
     try:
         insert_query = text("""
@@ -83,17 +73,33 @@ def create_user(session: Session, user: User) -> User:
         session.close()
 
 def get_user_by_email(session: Session, email: str) -> User | None:
+    """
+    Fetches a user record by email using raw SQL.
+
+    Args:
+        session (Session): The SQLAlchemy session object for database operations.
+        email (str): The email of the user to fetch.
+
+    Returns:
+        User | None: The User object if found, or None if no user is found.
+
+    Raises:
+        HTTPException: If a database error occurs or an unexpected exception is raised.
+    """
     try:
-        select_query = text("""SELECT * FROM user WHERE email=:email LIMIT 1""")
-        result = session.execute(select_query, {"email": email}).first()
-        return result
+        # Raw SQL query to fetch the user by email
+        select_query = text("""SELECT * FROM user WHERE email = :email LIMIT 1""")
+        result = session.execute(select_query, {"email": email}).fetchone()
+        if not result:
+            return None
+        result_dict = dict(result._mapping)
+        return User(**result_dict)
+
     except SQLAlchemyError as e:
         raise HTTPException(500, f"Database error: {str(e)}")
     except Exception as e:
         raise HTTPException(500, f"Unexpected error: {str(e)}")
-    finally:
-        session.close()
-
+    
 def activate_user(session: Session, email: str):
     """
     Activates a user in the database by setting their 'isActive' status to True.
@@ -110,16 +116,6 @@ def activate_user(session: Session, email: str):
     Raises:
         HTTPException: If a database error or an unexpected error occurs during the execution.
             The error message will contain the details of the exception.
-
-    Example:
-        To activate a user with the email "user@example.com":
-        
-        activate_user(session, "user@example.com")
-
-    Notes:
-        - This function assumes that the `user` table exists in the database with at least 
-          the 'email' and 'isActive' columns.
-        - The session will be closed after the operation is completed, regardless of success or failure.
     """
     try:
         activate_query = text("""UPDATE user SET isActive = :isActive WHERE email = :email""")
@@ -136,7 +132,11 @@ def get_user_by_id(session: Session, id: int) -> User | None:
     try: 
         select_query = text("""SELECT * FROM user WHERE id=:id LIMIT 1""")
         result = session.execute(select_query, {"id": id}).first()
-        return result
+        if not result:
+            return None
+        result_dict = dict(result._mapping)
+        return User(**result_dict)
+
     except SQLAlchemyError as e:
         raise HTTPException(500, f"Database error: {str(e)}")
     except Exception as e:
@@ -145,14 +145,22 @@ def get_user_by_id(session: Session, id: int) -> User | None:
         session.close()
 
 
-def get_all_users(session: Session) -> list[User] | None:
+def get_all_users(session: Session, page: int = 1, page_size: int = 10) -> list[User]:
     try:
-        select_query = text("""SELECT * FROM user""")
-        result = session.execute(select_query).fetchall()
-        return result
+        if page < 1 or page_size < 1:
+            raise HTTPException(400, "Page and page size must be positive integers.")
+
+        offset = (page - 1) * page_size
+        select_query = text("""SELECT * FROM user LIMIT :limit OFFSET :offset""")
+        result = session.execute(select_query, {"limit": page_size, "offset": offset}).fetchall()
+
+        if not result:
+            return []
+
+        users = [User(**row._mapping) for row in result]
+        return users
     except SQLAlchemyError as e:
         raise HTTPException(500, f"Database error: {str(e)}")
     except Exception as e:
         raise HTTPException(500, f"Unexpected error: {str(e)}")
-    finally:
-        session.close()
+
