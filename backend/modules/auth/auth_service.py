@@ -12,7 +12,7 @@ from modules.user.user_mapper import user_to_DTO
 from modules.user import user_service
 from shared.token import serializer, SALT
 from modules.mail.mail_service import send_activation_token
-
+from config.logger_config import logger
 
 def register_user(session: Session, user: UserRegister) -> UserDTO:
     """
@@ -35,7 +35,9 @@ def register_user(session: Session, user: UserRegister) -> UserDTO:
     Raises:
         DuplicateEntity: If the email address is already registered in the system (HTTP status 400).
     """
+
     doesUserExist: UserDTO | None = user_service.get_user_by_email_as_dto(session, user.email)
+    logger.info(f'Checking if user with the {user.email} exists')
     if doesUserExist:
         raise DuplicateEntity(400, "Email already taken")
     
