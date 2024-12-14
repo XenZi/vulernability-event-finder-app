@@ -11,12 +11,12 @@ class User(BaseModel):
     id: int | None = None
     email: str
     password: str
-    isActive: bool
-    creationDate: datetime
+    is_active: bool
+    creation_date: datetime
 
 class UserDTO(BaseModel):
     id: int
     email: str
-    isActive: bool
-    creationDate: datetime
+    is_active: bool
+    creation_date: datetime
 

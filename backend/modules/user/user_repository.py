@@ -19,16 +19,16 @@ def create_user(session: Session, user: User) -> User:
         user (User): The user object containing the following attributes:
             - email (str): The email of the user.
             - password (str): The hashed password of the user.
-            - isActive (bool): Indicates whether the user account is active.
-            - creationDate (datetime): The date and time the user was created.
+            - is_active (bool): Indicates whether the user account is active.
+            - creation_date (datetime): The date and time the user was created.
     
     Returns:
         User: The newly created User object with the following attributes:
             - id (int): The unique identifier of the user.
             - email (str): The email of the user.
             - password (str): The hashed password of the user.
-            - isActive (bool): Indicates whether the user account is active.
-            - creationDate (datetime): The date and time the user was created.
+            - is_active (bool): Indicates whether the user account is active.
+            - creation_date (datetime): The date and time the user was created.
     
     Raises:
         HTTPException: If an error occurs during the database operation. Possible scenarios include:
@@ -37,15 +37,15 @@ def create_user(session: Session, user: User) -> User:
     """
     try:
         insert_query = text("""
-            INSERT INTO user (email, password, isActive, creationDate) 
-            VALUES (:email, :password, :isActive, :creationDate);
+            INSERT INTO user (email, password, is_active, creation_date) 
+            VALUES (:email, :password, :is_active, :creation_date);
         """)
         
         session.execute(insert_query, {
             "email": user.email,
             "password": user.password,
-            "isActive": user.isActive,
-            "creationDate": user.creationDate
+            "is_active": user.is_active,
+            "creation_date": user.creation_date
         })
         
         last_insert_id = session.execute(text("SELECT LAST_INSERT_ID()")).scalar()
@@ -60,8 +60,8 @@ def create_user(session: Session, user: User) -> User:
             id=last_insert_id,
             email=user.email,
             password=user.password,
-            isActive=user.isActive,
-            creationDate=user.creationDate
+            is_active=user.is_active,
+            creation_date=user.creation_date
         )
     except SQLAlchemyError as e:
         session.rollback()
@@ -102,9 +102,9 @@ def get_user_by_email(session: Session, email: str) -> User | None:
     
 def activate_user(session: Session, email: str):
     """
-    Activates a user in the database by setting their 'isActive' status to True.
+    Activates a user in the database by setting their 'is_active' status to True.
 
-    This function executes an SQL UPDATE query to set the 'isActive' column of the 
+    This function executes an SQL UPDATE query to set the 'is_active' column of the 
     'user' table to True for the specified email address. If the operation is successful, 
     the changes are committed to the database. If any errors occur, an HTTPException 
     is raised with a relevant error message.
@@ -118,8 +118,8 @@ def activate_user(session: Session, email: str):
             The error message will contain the details of the exception.
     """
     try:
-        activate_query = text("""UPDATE user SET isActive = :isActive WHERE email = :email""")
-        session.execute(activate_query, {"isActive": True, "email": email})
+        activate_query = text("""UPDATE user SET is_active = :is_active WHERE email = :email""")
+        session.execute(activate_query, {"is_active": True, "email": email})
         session.commit()
     except SQLAlchemyError as e:
         raise HTTPException(500, f"Database error: {str(e)}")
