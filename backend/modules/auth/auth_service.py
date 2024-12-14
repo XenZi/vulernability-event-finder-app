@@ -35,12 +35,6 @@ def register_user(session: Session, user: UserRegister) -> UserDTO:
     Raises:
         DuplicateEntity: If the email address is already registered in the system (HTTP status 400).
     """
-
-    doesUserExist: UserDTO | None = user_service.get_user_by_email_as_dto(session, user.email)
-    logger.info(f'Checking if user with the {user.email} exists')
-    if doesUserExist:
-        raise DuplicateEntity(400, "Email already taken")
-    
     user_db = User(
         email=user.email,
         password=password_service.get_password_hash(user.password),
@@ -100,14 +94,10 @@ def activate_account(session: Session, token: str) -> UserDTO:
     """
     try:
         email = serializer.loads(token, salt=SALT, max_age=900)
-        doesUserExist: UserDTO | None = user_service.get_user_by_email_as_dto(session, email)
-        if not doesUserExist:
-            raise EntityNotFound(404, "User not found")
+        doesUserExist: UserDTO = user_service.get_user_by_email_as_dto(session, email)
         user_repository.activate_user(session, email)
         doesUserExist.is_active = True
         return doesUserExist
-    except EntityNotFound:
-        raise
     except Exception as e:
         raise InvalidToken(400, "Invalid or expired token") from e
 

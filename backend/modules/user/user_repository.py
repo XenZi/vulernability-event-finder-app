@@ -2,9 +2,9 @@ from http.client import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from modules.user.user_schemas import User
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
-from shared.exceptions import EntityNotFound
+from shared.exceptions import DatabaseFailedOperation, DuplicateEntity, EntityNotFound
 
 def create_user(session: Session, user: User) -> User:
     """
@@ -63,14 +63,14 @@ def create_user(session: Session, user: User) -> User:
             is_active=user.is_active,
             creation_date=user.creation_date
         )
-    except SQLAlchemyError as e:
+    except IntegrityError as e:
         session.rollback()
-        raise HTTPException(500, f"Database error: {str(e)}")
+        if e.orig and e.orig.args[0] == 1062:
+            raise DuplicateEntity(400, "Entity already exists")
+        raise DatabaseFailedOperation(500, f"Database error: {str(e)}")
     except Exception as e:
         session.rollback()
-        raise HTTPException(500, f"Unexpected error: {str(e)}")
-    finally:
-        session.close()
+        raise DatabaseFailedOperation(500, f"Unexpected error: {str(e)}")
 
 def get_user_by_email(session: Session, email: str) -> User | None:
     """
@@ -125,8 +125,6 @@ def activate_user(session: Session, email: str):
         raise HTTPException(500, f"Database error: {str(e)}")
     except Exception as e:
         raise HTTPException(500, f"Unexpected error: {str(e)}")
-    finally:
-        session.close()
 
 def get_user_by_id(session: Session, id: int) -> User | None:
     try: 
@@ -136,13 +134,10 @@ def get_user_by_id(session: Session, id: int) -> User | None:
             return None
         result_dict = dict(result._mapping)
         return User(**result_dict)
-
     except SQLAlchemyError as e:
         raise HTTPException(500, f"Database error: {str(e)}")
     except Exception as e:
         raise HTTPException(500, f"Unexpected error: {str(e)}")
-    finally:
-        session.close()
 
 
 def get_all_users(session: Session, page: int = 1, page_size: int = 10) -> list[User]:
@@ -160,7 +155,7 @@ def get_all_users(session: Session, page: int = 1, page_size: int = 10) -> list[
         users = [User(**row._mapping) for row in result]
         return users
     except SQLAlchemyError as e:
-        raise HTTPException(500, f"Database error: {str(e)}")
+        raise DatabaseFailedOperation(500, f"Database error: {str(e)}")
     except Exception as e:
-        raise HTTPException(500, f"Unexpected error: {str(e)}")
+        raise DatabaseFailedOperation(500, f"Unexpected error: {str(e)}")
 
