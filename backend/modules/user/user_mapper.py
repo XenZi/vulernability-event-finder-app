@@ -2,10 +2,10 @@ from modules.user.user_schemas import User, UserDTO
 
 def user_to_DTO(user: User) -> UserDTO:
     return UserDTO(
-            id=user.id,
+            id=user.id or 0,
             email=user.email,
-            isActive=user.isActive,
-            creationDate=user.creationDate
+            is_active=user.is_active,
+            creation_date=user.creation_date
         )
 
 def userList_to_DTOList(users: list[User]) -> list[UserDTO]:

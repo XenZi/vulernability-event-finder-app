@@ -44,9 +44,10 @@ def register_user(session: Session, user: UserRegister) -> UserDTO:
     user_db = User(
         email=user.email,
         password=password_service.get_password_hash(user.password),
-        isActive=False,
-        creationDate=datetime.now()
+        is_active=False,
+        creation_date=datetime.now()
     )
+    print(user_db.password)
     result = user_repository.create_user(session, user_db)
     send_activation_token(user)
     return user_to_DTO(result)
@@ -68,7 +69,7 @@ def login(session: Session, login_data: UserLogin) -> SuccessfulTokenPayload:
     user = user_service.get_user_by_email_as_entity(session, login_data.email)
     if not user:
         raise EntityNotFound(400, 'Not found')
-    if not user.isActive:
+    if not user.is_active:
         raise AuthenticationFailedException(401, 'User account is not validated yet.')
     valid_credentials = password_service.compare_password(login_data.password, user.password)
     if not valid_credentials:
@@ -83,7 +84,7 @@ def activate_account(session: Session, token: str) -> UserDTO:
     This function attempts to decode the provided activation token to retrieve the user's email. 
     The token is expected to be valid for 15 minutes (900 seconds). If the token is valid, 
     the user's email is used to look up the user in the database. If the user exists, their account is 
-    activated, setting the `isActive` field to `True`. If the token is invalid or expired, or the user 
+    activated, setting the `is_active` field to `True`. If the token is invalid or expired, or the user 
     cannot be found, an appropriate exception is raised.
 
     Args:
@@ -103,7 +104,7 @@ def activate_account(session: Session, token: str) -> UserDTO:
         if not doesUserExist:
             raise EntityNotFound(404, "User not found")
         user_repository.activate_user(session, email)
-        doesUserExist.isActive = True
+        doesUserExist.is_active = True
         return doesUserExist
     except EntityNotFound:
         raise
