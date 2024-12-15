@@ -87,7 +87,6 @@ def get_user_by_email(session: Session, email: str) -> User | None:
         HTTPException: If a database error occurs or an unexpected exception is raised.
     """
     try:
-        # Raw SQL query to fetch the user by email
         select_query = text("""SELECT * FROM user WHERE email = :email LIMIT 1""")
         result = session.execute(select_query, {"email": email}).fetchone()
         if not result:
