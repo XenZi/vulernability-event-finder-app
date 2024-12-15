@@ -4,7 +4,7 @@ from sqlalchemy import text
 from modules.user.user_schemas import User
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
-from shared.exceptions import DatabaseFailedOperation, DuplicateEntity, EntityNotFound
+from shared.exceptions import DatabaseFailedOperation, DuplicateEntity
 
 def create_user(session: Session, user: User) -> User:
     """

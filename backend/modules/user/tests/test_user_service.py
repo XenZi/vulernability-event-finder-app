@@ -28,9 +28,10 @@ class TestUserService(unittest.TestCase):
             creation_date=datetime.now()
         )
 
-    @patch("modules.user.user_service.get_user_by_email_as_entity")
+    @patch("modules.user.user_repository.get_user_by_email")
     def test_get_user_by_email_as_entity(self, mock_get_user_by_email):
         logger.info("testing get_user_by_email_as_entity")
+        
         mock_get_user_by_email.return_value = self.sample_user
         user = user_service.get_user_by_email_as_entity(self.session, "test@example.com")
 
@@ -41,8 +42,7 @@ class TestUserService(unittest.TestCase):
         with self.assertRaises(EntityNotFound):
             user_service.get_user_by_email_as_entity(self.session, "nonexistent@example.com")
 
-
-    @patch("modules.user.user_service.get_user_by_email_as_dto")
+    @patch("modules.user.user_repository.get_user_by_email")
     def test_get_user_by_email_as_dto(self, mock_get_user_by_email_as_dto):
         logger.info("testing get_user_by_email_as_dto")
 
@@ -57,7 +57,7 @@ class TestUserService(unittest.TestCase):
         with self.assertRaises(EntityNotFound):
             user_service.get_user_by_email_as_dto(self.session, "nonexistent@example.com")
 
-    @patch("modules.user.user_service.get_user_by_id_as_entity")
+    @patch("modules.user.user_repository.get_user_by_id")
     def test_get_user_by_id_as_entity(self, mock_get_user_by_id):
         logger.info("testing get_user_by_id_as_entity")
 
@@ -72,7 +72,7 @@ class TestUserService(unittest.TestCase):
         with self.assertRaises(EntityNotFound):
             user_service.get_user_by_id_as_entity(self.session, 999)
 
-    @patch("modules.user.user_service.get_user_by_id_as_dto")
+    @patch("modules.user.user_repository.get_user_by_id")
     def test_get_user_by_id_as_dto(self, mock_get_user_by_id_as_dto):
         logger.info("testing get_user_by_id_as_dto")
 
@@ -87,7 +87,7 @@ class TestUserService(unittest.TestCase):
         with self.assertRaises(EntityNotFound):
             user_service.get_user_by_id_as_dto(self.session, 999)
 
-    @patch("modules.user.user_service.get_users")
+    @patch("modules.user.user_repository.get_all_users")
     def test_get_users(self, mock_get_users):
         logger.info("testing get_users")
 
