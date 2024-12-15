@@ -1,8 +1,8 @@
 from shared.response_schemas import SuccessfulTokenPayload
-from modules.auth.schemas import UserLogin, Token
+from modules.auth.schemas import UserLogin
 from fastapi import APIRouter, status
 from modules.user.user_schemas import UserDTO, UserRegister
-from modules.auth import auth_service as auth_service
+from modules.auth import auth_service
 from shared.dependencies import SessionDep
 
 router = APIRouter()
