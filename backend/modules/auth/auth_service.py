@@ -6,7 +6,7 @@ from modules.user.user_schemas import User, UserDTO, UserRegister
 from sqlalchemy.orm import Session
 from datetime import datetime
 from modules.user import user_repository
-from shared.exceptions import AuthenticationFailedException, DuplicateEntity, InvalidToken, EntityNotFound
+from shared.exceptions import AuthenticationFailedException, DuplicateEntity, InvalidToken, EntityNotFound, DatabaseFailedOperation
 from modules.auth import password_service
 from modules.user.user_mapper import user_to_DTO
 from modules.user import user_service
@@ -41,10 +41,16 @@ def register_user(session: Session, user: UserRegister) -> UserDTO:
         is_active=False,
         creation_date=datetime.now()
     )
-    print(user_db.password)
-    result = user_repository.create_user(session, user_db)
+
+    try:
+        result = user_repository.create_user(session, user_db)
+    except DuplicateEntity as e:
+        raise e  
+    except Exception as e:
+        raise DatabaseFailedOperation(500, f"Unexpected error during registration: {str(e)}")
     send_activation_token(user)
     return user_to_DTO(result)
+
 
 def login(session: Session, login_data: UserLogin) -> SuccessfulTokenPayload:
     """
@@ -98,6 +104,8 @@ def activate_account(session: Session, token: str) -> UserDTO:
         user_repository.activate_user(session, email)
         doesUserExist.is_active = True
         return doesUserExist
+    except EntityNotFound as e:
+        raise e
     except Exception as e:
         raise InvalidToken(400, "Invalid or expired token") from e
 

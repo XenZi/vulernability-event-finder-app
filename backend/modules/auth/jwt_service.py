@@ -1,8 +1,12 @@
 import jwt
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, Optional
+from typing import Any, Dict
+from fastapi import status
+from pydantic import ValidationError
 from modules.auth.schemas import TokenData
 from config.config import settings
+from modules.auth.schemas import TokenData
+from shared.exceptions import AuthenticationFailedException
 
 def generate_jwt(
     payload: Dict[str, Any],
@@ -27,3 +31,11 @@ def generate_jwt(
         token = token.decode("utf-8")
 
     return token
+
+def decode_jwt(token: str) -> TokenData:
+    try:
+        payload = jwt.decode(token, settings.secret_key, algorithms=settings.password_algorithm)
+        token_data: TokenData = TokenData(**payload)
+        return token_data
+    except (jwt.InvalidTokenError, ValidationError):
+        raise AuthenticationFailedException(status_code=status.HTTP_403_FORBIDDEN, detail="Could not validate credentials")

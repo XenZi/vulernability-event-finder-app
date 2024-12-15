@@ -4,7 +4,7 @@ from sqlalchemy import text
 from modules.user.user_schemas import User
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
-from shared.exceptions import DatabaseFailedOperation, DuplicateEntity, EntityNotFound
+from shared.exceptions import DatabaseFailedOperation, DuplicateEntity
 
 def create_user(session: Session, user: User) -> User:
     """
@@ -87,7 +87,6 @@ def get_user_by_email(session: Session, email: str) -> User | None:
         HTTPException: If a database error occurs or an unexpected exception is raised.
     """
     try:
-        # Raw SQL query to fetch the user by email
         select_query = text("""SELECT * FROM user WHERE email = :email LIMIT 1""")
         result = session.execute(select_query, {"email": email}).fetchone()
         if not result:

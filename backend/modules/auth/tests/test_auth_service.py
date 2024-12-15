@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock, patch
 from sqlalchemy.orm import Session
-from shared.exceptions import AuthenticationFailedException, DuplicateEntity, InvalidToken, EntityNotFound
+from shared.exceptions import AuthenticationFailedException, DatabaseFailedOperation, DuplicateEntity, InvalidToken, EntityNotFound
 from shared.response_schemas import SuccessfulTokenPayload
 from modules.auth.schemas import UserLogin
 from modules.user.user_schemas import User, UserRegister, UserDTO
@@ -11,6 +11,7 @@ from modules.mail.mail_service import send_activation_token
 from datetime import datetime, timezone
 from shared.token import serializer, SALT
 from modules.auth.auth_service import register_user, login, activate_account
+from sqlalchemy.exc import IntegrityError
 
 class TestAuthFunctions(unittest.TestCase):
 
@@ -60,13 +61,19 @@ class TestAuthFunctions(unittest.TestCase):
         self.assertIsInstance(result, UserDTO)
         self.assertEqual(result.email, "test@example.com")
 
-    @patch("modules.user.user_service.get_user_by_email_as_dto")
-    def test_register_user_duplicate_email(self, mock_get_user_by_email):
+
+
+    @patch("modules.user.user_repository.create_user")
+    def test_register_user_duplicate_email(self, mock_create_user):
         user_data = UserRegister(email="test@example.com", password="password123")
-        mock_get_user_by_email.return_value = UserDTO(id=1, email="test@example.com", is_active=False, creation_date=datetime.now(timezone.utc))
+
+        mock_create_user.side_effect = DuplicateEntity(
+            400, "Entity already exists"
+        )
 
         with self.assertRaises(DuplicateEntity):
-            register_user(self.session, user_data)
+            register_user(mock_create_user, user_data)
+
 
     @patch("modules.user.user_service.get_user_by_email_as_dto")
     @patch("modules.user.user_repository.activate_user")
@@ -88,12 +95,13 @@ class TestAuthFunctions(unittest.TestCase):
         with self.assertRaises(InvalidToken):
             activate_account(self.session, "invalid_token")
 
-    @patch("shared.token.serializer.loads")
     @patch("modules.user.user_service.get_user_by_email_as_dto")
-    def test_activate_account_user_not_found(self, mock_get_user_by_email, mock_serializer_loads):
+    @patch("shared.token.serializer.loads")
+    def test_activate_account_user_not_found(self, mock_serializer_loads, mock_get_user_by_email):
         mock_serializer_loads.return_value = "test@example.com"
-        mock_get_user_by_email.return_value = None
-
+        mock_get_user_by_email.side_effect = EntityNotFound(
+            404, "Entity not found"
+        )
         with self.assertRaises(EntityNotFound):
             activate_account(self.session, "valid_token")
 
