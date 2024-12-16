@@ -5,7 +5,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from shared.exceptions import DatabaseFailedOperation, DuplicateEntity, Unauthorized
 
-def create_asset(session: Session, asset: Asset) -> AssetDTO:
+async def create_asset(session: Session, asset: Asset) -> AssetDTO:
     try:
         insert_query = text("""
             INSERT INTO Asset (ip, notification_priority_level, creation_date, user_id)
@@ -44,7 +44,7 @@ def create_asset(session: Session, asset: Asset) -> AssetDTO:
 
 # does not populate user field in asset
 # probably because of lack of join
-def get_asset_by_id(session: Session, asset_id: int, user_id: int) -> AssetDTO | None:
+async def get_asset_by_id(session: Session, asset_id: int, user_id: int) -> AssetDTO | None:
     try: 
         select_query = text("""SELECT * FROM Asset WHERE id=:id LIMIT 1""")
         result = session.execute(select_query, {"id": asset_id, "user_id": user_id}).first()
@@ -57,7 +57,7 @@ def get_asset_by_id(session: Session, asset_id: int, user_id: int) -> AssetDTO |
     except Exception as e:
         raise HTTPException(500, f"Unexpected error: {str(e)}")
 
-def get_all_assets_for_user(session: Session, user_id: int, page: int = 1, page_size: int = 10) -> list[AssetDTO]:
+async def get_all_assets_for_user(session: Session, user_id: int, page: int = 1, page_size: int = 10) -> list[AssetDTO]:
     try:
         if page < 1 or page_size < 1:
             raise HTTPException(400, "Page and page size must be positive integers.")
@@ -76,7 +76,7 @@ def get_all_assets_for_user(session: Session, user_id: int, page: int = 1, page_
     except Exception as e:
         raise DatabaseFailedOperation(500, f"Unexpected error: {str(e)}")
 
-def update_notification_priority_level(session: Session, asset: AssetDTO) -> AssetDTO:
+async def update_notification_priority_level(session: Session, asset: AssetDTO) -> AssetDTO:
     try:
         update_query = text("""
             UPDATE Asset
@@ -97,7 +97,7 @@ def update_notification_priority_level(session: Session, asset: AssetDTO) -> Ass
         session.rollback()
         raise DatabaseFailedOperation(500, f"Unexpected error: {str(e)}")
 
-def delete_asset(session: Session, asset_id: int, user_id: int):
+async def delete_asset(session: Session, asset_id: int, user_id: int):
     try:
         delete_query = text("""
         DELETE FROM asset
@@ -120,7 +120,7 @@ def delete_asset(session: Session, asset_id: int, user_id: int):
         session.rollback()
         raise DatabaseFailedOperation(500, f"Unexpected error: {str(e)}")
 
-def get_all_assets(session: Session, page: int = 1, page_size: int = 10) -> list[AssetDTO]:
+async def get_all_assets(session: Session, page: int = 1, page_size: int = 10) -> list[AssetDTO]:
     try:
         if page < 1 or page_size < 1:
             raise HTTPException(400, "Page and page size must be positive integers.")

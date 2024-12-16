@@ -6,7 +6,7 @@ from modules.user import user_mapper as mapper
 from shared.exceptions import EntityNotFound
 
 
-def get_user_by_email_as_entity(session: Session, email: str) -> User:
+async def get_user_by_email_as_entity(session: Session, email: str) -> User:
     """
     Retrieve a user by email. Returns either a User object or UserDTO based on the 'dto' flag.
 
@@ -16,12 +16,12 @@ def get_user_by_email_as_entity(session: Session, email: str) -> User:
     :return: User or UserDTO object.
     :raises EntityNotFound: If no user is found with the given ID.
     """
-    user = user_repository.get_user_by_email(session=session, email=email)
+    user = await user_repository.get_user_by_email(session=session, email=email)
     if not user:
         raise EntityNotFound(404, "Not found")
     return user
 
-def get_user_by_email_as_dto(session: Session, email: str) -> UserDTO:
+async def get_user_by_email_as_dto(session: Session, email: str) -> UserDTO:
     """
     Retrieve a user by email. Returns either a User object or UserDTO based on the 'dto' flag.
 
@@ -31,13 +31,13 @@ def get_user_by_email_as_dto(session: Session, email: str) -> UserDTO:
     :return: User or UserDTO object.
     :raises EntityNotFound: If no user is found with the given ID.
     """
-    user = user_repository.get_user_by_email(session=session, email=email)
+    user = await user_repository.get_user_by_email(session=session, email=email)
     if not user:
         raise EntityNotFound(404, "Not found")
     return mapper.user_to_DTO(user=user)
 
 
-def get_user_by_id_as_entity(session: Session, id: int) -> User:
+async def get_user_by_id_as_entity(session: Session, id: int) -> User:
     """
     Retrieve a user by ID. Returns either a User object or UserDTO based on the 'dto' flag.
 
@@ -47,12 +47,12 @@ def get_user_by_id_as_entity(session: Session, id: int) -> User:
     :return: User or UserDTO object.
     :raises EntityNotFound: If no user is found with the given ID.
     """
-    user = user_repository.get_user_by_id(session, id)
+    user = await user_repository.get_user_by_id(session, id)
     if not user:
         raise EntityNotFound(404, "User not found")
     return user
 
-def get_user_by_id_as_dto(session: Session, id: int) -> UserDTO:
+async def get_user_by_id_as_dto(session: Session, id: int) -> UserDTO:
     """
     Retrieve a user by ID. Returns either a User object or UserDTO based on the 'dto' flag.
 
@@ -62,12 +62,12 @@ def get_user_by_id_as_dto(session: Session, id: int) -> UserDTO:
     :return: User or UserDTO object.
     :raises EntityNotFound: If no user is found with the given ID.
     """
-    user = user_repository.get_user_by_id(session, id)
+    user = await user_repository.get_user_by_id(session, id)
     if not user:
         raise EntityNotFound(404, "User not found")
     return mapper.user_to_DTO(user)
 
-def get_users(session: Session, page: int, page_size: int) -> List[UserDTO]:
+async def get_users(session: Session, page: int, page_size: int) -> List[UserDTO]:
     """
     Retrieve a paginated list of users from the database and map them to UserDTO objects.
 
@@ -82,7 +82,7 @@ def get_users(session: Session, page: int, page_size: int) -> List[UserDTO]:
     Raises:
         Any exceptions raised by the user repository or mapper functions are propagated.
     """
-    users = user_repository.get_all_users(session, page, page_size)
+    users = await user_repository.get_all_users(session, page, page_size)
     if not users:
         return []
     return mapper.userList_to_DTOList(users)

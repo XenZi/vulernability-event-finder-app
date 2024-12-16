@@ -13,7 +13,7 @@ router = APIRouter(prefix="/users")
 
 
 @router.get("", response_model=UserDTO)
-def get_user_by_id(user: CurrentUser) -> UserDTO:
+async def get_user_by_id(user: CurrentUser) -> UserDTO:
     return user
 
 

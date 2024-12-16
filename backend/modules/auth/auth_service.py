@@ -14,7 +14,7 @@ from shared.token import serializer, SALT
 from modules.mail.mail_service import send_activation_token
 from config.logger_config import logger
 
-def register_user(session: Session, user: UserRegister) -> UserDTO:
+async def register_user(session: Session, user: UserRegister) -> UserDTO:
     """
     Registers a new user in the system by validating the provided details and saving them to the database.
 
@@ -44,7 +44,7 @@ def register_user(session: Session, user: UserRegister) -> UserDTO:
     )
 
     try:
-        result = user_repository.create_user(session, user_db)
+        result = await user_repository.create_user(session, user_db)
     except DuplicateEntity as e:
         raise e  
     except Exception as e:
@@ -53,7 +53,7 @@ def register_user(session: Session, user: UserRegister) -> UserDTO:
     return user_to_DTO(result)
 
 
-def login(session: Session, login_data: UserLogin) -> SuccessfulTokenPayload:
+async def login(session: Session, login_data: UserLogin) -> SuccessfulTokenPayload:
     """
     Authenticates a user and generates a JWT token upon successful login.
 
@@ -67,7 +67,7 @@ def login(session: Session, login_data: UserLogin) -> SuccessfulTokenPayload:
     Raises:
         AuthenticationFailedException: Raised if the user credentials are invalid.
     """
-    user = user_service.get_user_by_email_as_entity(session, login_data.email)
+    user = await user_service.get_user_by_email_as_entity(session, login_data.email)
     if not user:
         raise EntityNotFound(400, 'Not found')
     if not user.is_active:
@@ -78,7 +78,7 @@ def login(session: Session, login_data: UserLogin) -> SuccessfulTokenPayload:
     token = jwt_service.generate_jwt({"id":user.id, "email": user.email})
     return SuccessfulTokenPayload(token=token)
 
-def activate_account(session: Session, token: str) -> UserDTO:
+async def activate_account(session: Session, token: str) -> UserDTO:
     """
     Activates a user's account by verifying the provided activation token.
 
@@ -101,8 +101,8 @@ def activate_account(session: Session, token: str) -> UserDTO:
     """
     try:
         email = serializer.loads(token, salt=SALT, max_age=900)
-        doesUserExist: UserDTO = user_service.get_user_by_email_as_dto(session, email)
-        user_repository.activate_user(session, email)
+        doesUserExist: UserDTO = await user_service.get_user_by_email_as_dto(session, email)
+        await user_repository.activate_user(session, email)
         doesUserExist.is_active = True
         return doesUserExist
     except EntityNotFound as e:

@@ -21,11 +21,11 @@ def get_db() -> Generator[Session, None, None]:
 
 SessionDep = Annotated[Session, Depends(get_db)]
 
-def get_current_user(session: SessionDep, credentials: HTTPAuthorizationCredentials = Depends(security)) -> UserDTO:
+async def get_current_user(session: SessionDep, credentials: HTTPAuthorizationCredentials = Depends(security)) -> UserDTO:
     token = credentials.credentials
     try:
         token_data = decode_jwt(token=token)
-        user = user_service.get_user_by_id_as_dto(session, token_data.id)
+        user = await user_service.get_user_by_id_as_dto(session, token_data.id)
         return user
     except AuthenticationFailedException as e:
         raise e
