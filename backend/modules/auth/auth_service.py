@@ -36,6 +36,7 @@ def register_user(session: Session, user: UserRegister) -> UserDTO:
         DuplicateEntity: If the email address is already registered in the system (HTTP status 400).
     """
     user_db = User(
+        id=0,
         email=user.email,
         password=password_service.get_password_hash(user.password),
         is_active=False,

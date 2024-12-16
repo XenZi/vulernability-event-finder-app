@@ -1,11 +1,11 @@
-from modules.assets.asset_schemas import Asset
+from modules.assets.asset_schemas import Asset, AssetDTO
 from http.client import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from shared.exceptions import DatabaseFailedOperation, DuplicateEntity, Unauthorized
 
-def create_asset(session: Session, asset: Asset) -> Asset:
+def create_asset(session: Session, asset: Asset) -> AssetDTO:
     try:
         insert_query = text("""
             INSERT INTO Asset (ip, notification_priority_level, creation_date, user_id)
@@ -16,7 +16,7 @@ def create_asset(session: Session, asset: Asset) -> Asset:
             "ip": asset.ip,
             "notification_priority_level": asset.notification_priority_level.value,
             "creation_date": asset.creation_date,
-            "user_id": asset.user.id
+            "user_id": asset.user.id if asset.user else 0
         })
 
         last_insert_id = session.execute(text("SELECT LAST_INSERT_ID()")).scalar()
@@ -26,12 +26,12 @@ def create_asset(session: Session, asset: Asset) -> Asset:
 
         session.commit()
 
-        return Asset(
+        return AssetDTO(
               id=last_insert_id,
               ip=asset.ip,
               notification_priority_level=asset.notification_priority_level,
               creation_date=asset.creation_date,
-              user=asset.user
+              user_id=asset.user.id
         )
     except IntegrityError as e:
         session.rollback()
@@ -44,20 +44,20 @@ def create_asset(session: Session, asset: Asset) -> Asset:
 
 # does not populate user field in asset
 # probably because of lack of join
-def get_asset_by_id(session: Session, asset_id: int, user_id: int) -> Asset | None:
+def get_asset_by_id(session: Session, asset_id: int, user_id: int) -> AssetDTO | None:
     try: 
-        select_query = text("""SELECT * FROM Asset WHERE id=:id and user_id=:user_id LIMIT 1""")
+        select_query = text("""SELECT * FROM Asset WHERE id=:id LIMIT 1""")
         result = session.execute(select_query, {"id": asset_id, "user_id": user_id}).first()
         if not result:
             return None
         result_dict = dict(result._mapping)
-        return Asset(**result_dict)
+        return AssetDTO(**result_dict)
     except SQLAlchemyError as e:
         raise HTTPException(500, f"Database error: {str(e)}")
     except Exception as e:
         raise HTTPException(500, f"Unexpected error: {str(e)}")
 
-def get_all_assets_for_user(session: Session, user_id: int, page: int = 1, page_size: int = 10) -> list[Asset]:
+def get_all_assets_for_user(session: Session, user_id: int, page: int = 1, page_size: int = 10) -> list[AssetDTO]:
     try:
         if page < 1 or page_size < 1:
             raise HTTPException(400, "Page and page size must be positive integers.")
@@ -69,33 +69,26 @@ def get_all_assets_for_user(session: Session, user_id: int, page: int = 1, page_
         if not result:
             return []
         
-        assets = [Asset(**row._mapping) for row in result]
+        assets = [AssetDTO(**row._mapping) for row in result]
         return assets
     except SQLAlchemyError as e:
         raise DatabaseFailedOperation(500, f"Database error: {str(e)}")
     except Exception as e:
         raise DatabaseFailedOperation(500, f"Unexpected error: {str(e)}")
 
-def update_notification_priority_level(session: Session, asset: Asset) -> Asset:
+def update_notification_priority_level(session: Session, asset: AssetDTO) -> AssetDTO:
     try:
         update_query = text("""
             UPDATE Asset
-            SET notification_priority_level = 
-            IF(user_id = :user_id, :new_priority_level, notification_priority_level)
+            SET notification_priority_level = :new_priority_level
             WHERE id = :asset_id;
         """)
         result = session.execute(update_query, {
             "new_priority_level": asset.notification_priority_level.value,
             "asset_id": asset.id,
-            "user_id": asset.user.id
+            "user_id": asset.user_id 
         })
-
-        # may fail if asset_id is wrong, which isnt an authorization fail, but less likely
-        if result.rowcount == 0:
-            raise Unauthorized(401, "Update failed, unauthorized")
-
-        session.commit()
-        
+        session.commit()  
         return asset
     except SQLAlchemyError as e:
         session.rollback()
@@ -116,7 +109,7 @@ def delete_asset(session: Session, asset_id: int, user_id: int):
         })
 
         # may fail if asset_id is wrong, which isnt an authorization fail, but less likely
-        if result.rowcount == 0:
+        if result.rowcount == 0: # type: ignore
             raise Unauthorized(401, "Delete failed, unauthorized")
 
         session.commit()
@@ -127,7 +120,7 @@ def delete_asset(session: Session, asset_id: int, user_id: int):
         session.rollback()
         raise DatabaseFailedOperation(500, f"Unexpected error: {str(e)}")
 
-def get_all_assets(session: Session, page: int = 1, page_size: int = 10) -> list[Asset]:
+def get_all_assets(session: Session, page: int = 1, page_size: int = 10) -> list[AssetDTO]:
     try:
         if page < 1 or page_size < 1:
             raise HTTPException(400, "Page and page size must be positive integers.")
@@ -139,7 +132,7 @@ def get_all_assets(session: Session, page: int = 1, page_size: int = 10) -> list
         if not result:
             return []
 
-        assets = [Asset(**row._mapping) for row in result]
+        assets = [AssetDTO(**row._mapping) for row in result]
         return assets
     except SQLAlchemyError as e:
         raise DatabaseFailedOperation(500, f"Database error: {str(e)}")

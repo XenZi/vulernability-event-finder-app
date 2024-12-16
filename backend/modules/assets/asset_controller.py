@@ -14,16 +14,15 @@ async def get_asset_by_id(session: SessionDep, current_user: CurrentUser, asset_
     return asset_service.get_asset_by_id_as_dto(session=session, asset_id=asset_id, user_id=current_user.id)
 
 @router.delete("/{asset_id}", status_code=status.HTTP_200_OK)
-async def get_asset_by_id(session: SessionDep, current_user: CurrentUser, asset_id: int):
-    asset_service.delete_asset(session=session, asset_id=asset_id, user_id=current_user.id)
-    return status.HTTP_200_OK
+async def delete_asset_by_id(session: SessionDep, current_user: CurrentUser, asset_id: int) -> AssetDTO:
+    return asset_service.delete_asset(session=session, asset_id=asset_id, user_id=current_user.id)
 
 @router.put("/update", response_model=AssetDTO, status_code=status.HTTP_200_OK)
-async def get_asset_by_id(session: SessionDep, current_user: CurrentUser, asset: Asset) -> AssetDTO:
-    return asset_service.update_asset_notification_priority_level(session=session, asset=asset, user=current_user)
+async def update_asset_by_id(session: SessionDep, current_user: CurrentUser, asset: AssetDTO) -> AssetDTO:
+    return asset_service.update_asset_notification_priority_level(session=session, assetDTO=asset, user=current_user)
 
 @router.get("/user_assets/", response_model=list[AssetDTO], status_code=status.HTTP_200_OK)
-async def get_all_assets(
+async def get_all_assets_by_user(
     session: SessionDep,
     current_user: CurrentUser,
     page: int = Query(1, ge=1),
