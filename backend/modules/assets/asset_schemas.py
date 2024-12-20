@@ -1,19 +1,22 @@
-from modules.user.user_schemas import User
+from modules.user.user_schemas import UserDTO
 from shared.enums import PriorityLevel
 from pydantic import BaseModel
 from datetime import datetime, timezone
 
 
-class Asset(BaseModel):
-    id: int | None = None
+class AssetRegister(BaseModel):
     ip: str
-    notification_priority_level: PriorityLevel = PriorityLevel.NoPriority
-    creation_date: datetime = datetime.now(timezone.utc)
-    user: User | None = None
 
+class Asset(BaseModel):
+    id: int 
+    ip: str
+    notification_priority_level: PriorityLevel = PriorityLevel.Minor
+    creation_date: datetime = datetime.now(timezone.utc)
+    user: UserDTO
 
 class AssetDTO(BaseModel):
-    id: int | None = None
+    id: int 
     ip: str
-    notification_priority_level: PriorityLevel = PriorityLevel.NoPriority
+    notification_priority_level: PriorityLevel = PriorityLevel.Minor
     creation_date: datetime = datetime.now(timezone.utc)
+    user_id: int

@@ -3,10 +3,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from modules.user.user_schemas import User
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
-
 from shared.exceptions import DatabaseFailedOperation, DuplicateEntity
 
-def create_user(session: Session, user: User) -> User:
+async def create_user(session: Session, user: User) -> User:
     """
     Inserts a new user record into the database and returns the created user object.
     
@@ -72,7 +71,7 @@ def create_user(session: Session, user: User) -> User:
         session.rollback()
         raise DatabaseFailedOperation(500, f"Unexpected error: {str(e)}")
 
-def get_user_by_email(session: Session, email: str) -> User | None:
+async def get_user_by_email(session: Session, email: str) -> User | None:
     """
     Fetches a user record by email using raw SQL.
 
@@ -99,7 +98,7 @@ def get_user_by_email(session: Session, email: str) -> User | None:
     except Exception as e:
         raise HTTPException(500, f"Unexpected error: {str(e)}")
     
-def activate_user(session: Session, email: str):
+async def activate_user(session: Session, email: str):
     """
     Activates a user in the database by setting their 'is_active' status to True.
 
@@ -125,7 +124,7 @@ def activate_user(session: Session, email: str):
     except Exception as e:
         raise HTTPException(500, f"Unexpected error: {str(e)}")
 
-def get_user_by_id(session: Session, id: int) -> User | None:
+async def get_user_by_id(session: Session, id: int) -> User | None:
     try: 
         select_query = text("""SELECT * FROM user WHERE id=:id LIMIT 1""")
         result = session.execute(select_query, {"id": id}).first()
@@ -139,7 +138,7 @@ def get_user_by_id(session: Session, id: int) -> User | None:
         raise HTTPException(500, f"Unexpected error: {str(e)}")
 
 
-def get_all_users(session: Session, page: int = 1, page_size: int = 10) -> list[User]:
+async def get_all_users(session: Session, page: int = 1, page_size: int = 10) -> list[User]:
     try:
         if page < 1 or page_size < 1:
             raise HTTPException(400, "Page and page size must be positive integers.")
