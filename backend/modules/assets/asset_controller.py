@@ -9,6 +9,10 @@ router = APIRouter(prefix="/assets")
 async def create_asset(session: SessionDep, current_user: CurrentUser, asset: AssetRegister) -> AssetDTO:
     return await asset_service.create_asset(session=session, user=current_user, asset=asset)
 
+@router.get("/dddddd/", response_model=int, status_code=status.HTTP_200_OK)
+async def count_all_assets(session: SessionDep) -> int:
+    return await asset_service.count_all_assets(session=session)
+
 @router.get("/{asset_id}", response_model=AssetDTO, status_code=status.HTTP_200_OK)
 async def get_asset_by_id(session: SessionDep, current_user: CurrentUser, asset_id: int) -> AssetDTO:
     asset_dto = await asset_service.get_asset_by_id_as_dto(session=session, asset_id=asset_id, user_id=current_user.id)
@@ -37,3 +41,4 @@ async def get_all_assets(
     page_size: int = Query(10, ge=1)
 ) -> list[AssetDTO]:
     return await asset_service.get_all_assets(session, page, page_size)
+

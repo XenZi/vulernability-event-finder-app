@@ -32,17 +32,38 @@ CREATE TABLE Asset (
 );
 
 
-INSERT INTO Asset (ip, notification_priority_level, creation_date, user_id) VALUES 
-('192.168.1.1', 1, '2024-12-15 10:00:00', 1),
-('192.168.1.2', 2, '2024-12-15 11:00:00', 1), 
-('172.16.0.1', 3, '2024-12-15 12:00:00', 1),
-('192.168.1.3', 1, '2024-12-15 13:00:00', 2);
-
+INSERT INTO Asset (ip, notification_priority_level, user_id)
+VALUES
+    ('192.168.1.1', 1, 1),
+    ('192.168.1.2', 1, 1),
+    ('192.168.1.3', 1, 1),
+    ('192.168.1.4', 1, 1),
+    ('192.168.1.5', 1, 1),
+    ('192.168.1.6', 1, 1),
+    ('192.168.1.7', 1, 1),
+    ('192.168.1.8', 1, 1),
+    ('192.168.1.9', 1, 1),
+    ('192.168.1.10', 1, 1),
+    ('192.168.1.11', 1, 1),
+    ('192.168.1.12', 1, 1),
+    ('192.168.1.13', 1, 1),
+    ('192.168.1.14', 1, 1),
+    ('192.168.1.15', 1, 1),
+    ('192.168.1.16', 1, 1),
+    ('192.168.1.17', 1, 1),
+    ('192.168.1.18', 1, 1),
+    ('192.168.1.19', 1, 1),
+    ('192.168.1.20', 1, 1),
+    ('192.168.1.21', 1, 1),
+    ('192.168.1.22', 1, 1),
+    ('192.168.1.23', 1, 1),
+    ('192.168.1.24', 1, 1),
+    ('192.168.1.25', 1, 1);
 
 
 CREATE TABLE Event (
-    id INT AUTO_INCREMENT PRIMARY KEY
-    uuid VARCHAR(36) NOT NULL, -- UUID last occurrence -> saljemo direktno na https://development.unicom.systems:8019/api/v1/event/getEvent/a0097e14-b059-4908-af94-2f226de7a22d
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    uuid VARCHAR(36) NOT NULL,
     status INT NOT NULL,         
     host VARCHAR(255) NOT NULL,   
     port VARCHAR(10) NOT NULL, 
@@ -83,9 +104,3 @@ INSERT INTO Event (
 
 
 
-
--- INSERT INTO Event (uuid, status, host, port, priority, location, creation_date, last_occurrence, asset_id)
--- VALUES (:uuid, :status, :host, :port, :priority, :location, :creation_date, :last_occurrence, :asset_id)
--- ON DUPLICATE KEY UPDATE
---     last_occurrence = GREATEST(last_occurrence, VALUES(last_occurrence));
--- uuid = :uuid

@@ -62,3 +62,10 @@ async def get_all_assets(session: Session, page: int, page_size: int) -> List[As
     if not assets:
         return []
     return assets
+
+
+async def count_all_assets(session: Session) -> int:
+    return await asset_repository.count_all_assets(session)
+
+async def get_all_ips_in_range(session: Session, start_point, end_point) -> List[str]:
+    return await asset_repository.get_all_assets_in_range(session, start_point, end_point)
