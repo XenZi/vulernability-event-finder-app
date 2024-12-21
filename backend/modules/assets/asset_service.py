@@ -14,7 +14,7 @@ async def create_asset(session: Session, user: UserDTO, asset: AssetRegister) ->
     asset_db = Asset(
         id=0,
         ip=asset.ip,
-        notification_priority_level=PriorityLevel.Minor,
+        notification_priority_level=PriorityLevel.Low,
         creation_date=datetime.now(),
         user=user
     )

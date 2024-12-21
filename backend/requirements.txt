@@ -7,3 +7,4 @@ itsdangerous
 PyJWT
 passlib[bcrypt]
 loguru
+apscheduler

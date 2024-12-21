@@ -1,12 +1,23 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from shared.exceptions import ApiError, BaseHTTPException
 from modules.router import api_router
 from fastapi.middleware.cors import CORSMiddleware
 from shared.middlewares import LoggingMiddleware
+from modules.cron.cron_task import scheduler
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    yield
+    print("Turning off the application")
+    scheduler.shutdown()
 
 app = FastAPI()
+
+scheduler.start()
+
+
 
 app.add_middleware(
         CORSMiddleware,
