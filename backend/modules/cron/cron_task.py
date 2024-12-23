@@ -6,21 +6,35 @@ from apscheduler.triggers.interval import IntervalTrigger
 import httpx
 from config.config import settings
 from modules.assets import asset_service
+from modules.events import event_repository
+from modules.events.events_schemas import ReceivedEvent
 from shared.dependencies import  get_db
 from config.logger_config import logger
 
 async def process_event(start_point, end_point, session):
     try:
         ips = await asset_service.get_all_ips_in_range(session, start_point, end_point)
-        print(ips)
-        str_of_ips = ",".join(ips)
+        # print(ips)
+        str_of_ips = ",".join(ips.keys())
         base_url = f'{settings.external_base_url_events}?ip={str_of_ips}'
         headers = {"Authorization": f"Bearer {settings.external_jwt_token}"}
         async with httpx.AsyncClient() as client:
             response = await client.get(base_url, headers=headers)
             response.raise_for_status()  
             logger.info(f"Task for range {start_point}-{end_point} completed with status: {response.status_code}")
-            # print(response.json())
+            events_data = response.json()["data"]["data"]
+            for event in events_data: 
+                received_event = ReceivedEvent(
+                    timestamp=event.get("@timestamp"),
+                    event_uuid=event.get("event_uuid"),
+                    ip=event.get("ip"),
+                    port=event.get("port"),
+                    category_name=event.get("category_name"),
+                    urgency=event.get("urgency")
+                )
+                inserted_event = await event_repository.create_new_event(session, received_event, ips.get(event.get("ip"))) # type: ignore
+                print(inserted_event)
+
     except httpx.RequestError as e:
         logger.error(f"Network error for range {start_point}-{end_point}: {e}")
     except httpx.HTTPStatusError as e:

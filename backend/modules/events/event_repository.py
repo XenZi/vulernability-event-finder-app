@@ -1,11 +1,50 @@
 
+import datetime
 from http.client import HTTPException
-from modules.events.events_schemas import Event
+from time import timezone
+from modules.events.events_schemas import Event, ReceivedEvent
 from shared.dependencies import Session
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
+from shared.enums import EventStatus, PriorityLevel
 from shared.exceptions import DatabaseFailedOperation
+
+
+async def create_new_event(session: Session, receivedEvent: ReceivedEvent, asset_id: int) -> Event | None:
+    try:
+        insert_query = text("""
+            INSERT INTO Event (uuid, status, host, port, priority, location, last_occurrence, asset_id)
+            VALUES (
+                :uuid,
+                :status,
+                :host,
+                :port,
+                :priority,
+                :location,
+                :last_occurrence,
+                :asset_id
+            )
+            ON DUPLICATE KEY UPDATE
+                last_occurrence = GREATEST(last_occurrence, VALUES(last_occurrence));
+        """)
+
+        session.execute(insert_query, {
+            "uuid": receivedEvent.event_uuid,
+            "status": EventStatus.Discovered.value,  # Assuming Enum values are integers
+            "host": receivedEvent.ip,
+            "port": receivedEvent.port,
+            "priority": PriorityLevel[receivedEvent.urgency.title()].value,  # Ensure title matches Enum keys
+            "location": "",  # Empty string as default
+            "last_occurrence": datetime.datetime.now(),  # Use actual datetime instance
+            "asset_id": asset_id,
+        })
+        session.commit()  # Commit changes to persist in the database
+    except SQLAlchemyError as e:
+        session.rollback()  # Rollback transaction on error
+        raise HTTPException(500, f"Database error: {str(e)}")
+    except Exception as e:
+        raise HTTPException(500, f"Unexpected error: {str(e)}")
 
 async def get_event_by_id(session: Session, asset_id: int) -> Event | None:
     try: 

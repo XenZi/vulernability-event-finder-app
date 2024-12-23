@@ -14,3 +14,12 @@ class Event(BaseModel):
     creation_date: datetime
     last_occurance: datetime
     asset_id: int
+
+
+class ReceivedEvent(BaseModel):
+    timestamp: str
+    event_uuid: str
+    ip: str
+    port: int
+    category_name: str
+    urgency: str

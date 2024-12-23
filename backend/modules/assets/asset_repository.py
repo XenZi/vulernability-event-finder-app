@@ -1,5 +1,5 @@
 import re
-from typing import List
+from typing import Dict, List
 from modules.assets.asset_schemas import Asset, AssetDTO
 from http.client import HTTPException
 from sqlalchemy.orm import Session
@@ -155,17 +155,45 @@ async def count_all_assets(session: Session) -> int:
         raise DatabaseFailedOperation(500, f"Unexpected error: {str(e)}")
     
 
-async def get_all_assets_in_range(session: Session, start_point: int, end_point: int) -> List[str]:
+# async def get_all_assets_in_range(session: Session, start_point: int, end_point: int) -> List[str]:
+#     try:
+#         # Validate the range
+#         if start_point < 0 or end_point <= start_point:
+#             raise HTTPException(400, "Invalid range: start_point must be non-negative, and end_point must be greater than start_point.")
+
+#         # Calculate the limit and offset
+
+#         # Define the query
+#         query = """
+#             SELECT ip
+#             FROM asset 
+#             WHERE id BETWEEN :start_point AND :end_point
+#         """
+        
+#         # Execute the query
+#         result = session.execute(text(query), {"start_point": start_point, "end_point": end_point}).fetchall()
+
+#         if not result:
+#             return []
+
+#         # Extract assets from the result
+#         assets = [row._mapping['ip'] for row in result]
+#         return assets
+
+#     except SQLAlchemyError as e:
+#         raise DatabaseFailedOperation(500, f"Database error: {str(e)}")
+#     except Exception as e:
+#         raise DatabaseFailedOperation(500, f"Unexpected error: {str(e)}")
+
+async def get_all_assets_in_range(session: Session, start_point: int, end_point: int) -> Dict[str, int]:
     try:
         # Validate the range
         if start_point < 0 or end_point <= start_point:
             raise HTTPException(400, "Invalid range: start_point must be non-negative, and end_point must be greater than start_point.")
 
-        # Calculate the limit and offset
-
         # Define the query
         query = """
-            SELECT ip
+            SELECT id, ip
             FROM asset 
             WHERE id BETWEEN :start_point AND :end_point
         """
@@ -174,11 +202,11 @@ async def get_all_assets_in_range(session: Session, start_point: int, end_point:
         result = session.execute(text(query), {"start_point": start_point, "end_point": end_point}).fetchall()
 
         if not result:
-            return []
+            return {}
 
-        # Extract assets from the result
-        assets = [row._mapping['ip'] for row in result]
-        return assets
+        # Map results to a dictionary where keys are "ip" and values are "id"
+        asset_map = {row._mapping["ip"]: row._mapping["id"] for row in result}
+        return asset_map
 
     except SQLAlchemyError as e:
         raise DatabaseFailedOperation(500, f"Database error: {str(e)}")

@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List
 from modules.assets import asset_mapper
 from modules.assets.asset_schemas import Asset, AssetDTO, AssetRegister
 from sqlalchemy.orm import Session
@@ -67,5 +67,5 @@ async def get_all_assets(session: Session, page: int, page_size: int) -> List[As
 async def count_all_assets(session: Session) -> int:
     return await asset_repository.count_all_assets(session)
 
-async def get_all_ips_in_range(session: Session, start_point, end_point) -> List[str]:
+async def get_all_ips_in_range(session: Session, start_point, end_point) -> Dict[str, int]:
     return await asset_repository.get_all_assets_in_range(session, start_point, end_point)
