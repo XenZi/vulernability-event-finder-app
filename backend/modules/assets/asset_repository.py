@@ -185,21 +185,21 @@ async def count_all_assets(session: Session) -> int:
 #     except Exception as e:
 #         raise DatabaseFailedOperation(500, f"Unexpected error: {str(e)}")
 
-async def get_all_assets_in_range(session: Session, start_point: int, end_point: int) -> Dict[str, int]:
+async def get_all_assets_in_range(session: Session, start_id: int, end_id: int) -> Dict[str, int]:
     try:
         # Validate the range
-        if start_point < 0 or end_point <= start_point:
-            raise HTTPException(400, "Invalid range: start_point must be non-negative, and end_point must be greater than start_point.")
+        if start_id < 0 or end_id <= start_id:
+            raise HTTPException(400, "Invalid range: start_id must be non-negative, and end_id must be greater than start_id.")
 
         # Define the query
         query = """
             SELECT id, ip
             FROM asset 
-            WHERE id BETWEEN :start_point AND :end_point
+            WHERE id BETWEEN :start_id AND :end_id
         """
         
         # Execute the query
-        result = session.execute(text(query), {"start_point": start_point, "end_point": end_point}).fetchall()
+        result = session.execute(text(query), {"start_id": start_id, "end_id": end_id}).fetchall()
 
         if not result:
             return {}

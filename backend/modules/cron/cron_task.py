@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 import math
 from typing import List, Tuple
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -10,6 +11,7 @@ from modules.events import event_repository
 from modules.events.events_schemas import ReceivedEvent
 from shared.dependencies import  get_db
 from config.logger_config import logger
+from modules.cron.memtable import memtable_dict, Entry
 
 async def process_event(start_point, end_point, session):
     try:
@@ -18,22 +20,16 @@ async def process_event(start_point, end_point, session):
         str_of_ips = ",".join(ips.keys())
         base_url = f'{settings.external_base_url_events}?ip={str_of_ips}'
         headers = {"Authorization": f"Bearer {settings.external_jwt_token}"}
+        test = 0
         async with httpx.AsyncClient() as client:
             response = await client.get(base_url, headers=headers)
             response.raise_for_status()  
             logger.info(f"Task for range {start_point}-{end_point} completed with status: {response.status_code}")
             events_data = response.json()["data"]["data"]
-            for event in events_data: 
-                received_event = ReceivedEvent(
-                    timestamp=event.get("@timestamp"),
-                    event_uuid=event.get("event_uuid"),
-                    ip=event.get("ip"),
-                    port=event.get("port"),
-                    category_name=event.get("category_name"),
-                    urgency=event.get("urgency")
-                )
-                inserted_event = await event_repository.create_new_event(session, received_event, ips.get(event.get("ip"))) # type: ignore
-                print(inserted_event)
+            key = f'{start_point}-{end_point}'
+
+            memtable_dict[key] = Entry(timestamp=datetime.now(), data=f'transaction-{test}')
+            test += 1
 
     except httpx.RequestError as e:
         logger.error(f"Network error for range {start_point}-{end_point}: {e}")
@@ -93,8 +89,49 @@ async def example_task():
     for _ in workers:
         await task_queue.put(None)
 
-    await asyncio.gather(*workers)
+    test = await asyncio.gather(*workers)
+    if len(test) == current_number_of_workers:
+        task_queue.shutdown()
+        print("Jednako je")
+        await new_example_task(current_number_of_workers)
     print("All tasks completed")
+
+
+async def worker_transaction(task_queue, worker_id, session, sql_statement):
+    while True:
+        task = await task_queue.get()
+        if task is None:  
+            print(f"Worker {worker_id} is stopping.")
+            break
+
+        index_points = task
+        print(f"Worker {worker_id} is processing task: {index_points}")
+        await process_transaction(index_points, session, sql_statement)
+        print(f"Worker {worker_id} completed task: {index_points}")
+        task_queue.task_done()
+
+async def process_transaction(index_points, session, sql_statement):
+    print()
+
+async def new_example_task(current_number_of_workers):
+    workers = []
+    task_queue = asyncio.Queue()
+    sessionDB = next(get_db())
+    ranges = list(memtable_dict.keys())
+    for key in ranges:
+        await task_queue.put((key))
+    
+    for worker_id in range(0, current_number_of_workers, 1):
+        print("NEW EORKER ID ", worker_id)
+        workers.append(asyncio.create_task(worker_transaction(task_queue, worker_id, sessionDB, memtable_dict.get(ranges[worker_id]).get("data"))))
+
+    await task_queue.join()
+
+    for _ in workers:
+        await task_queue.put(None)
+
+    await asyncio.gather(*workers)
+    print("All tasks completed once again")
 
 def format_range(counted_ips: int, current_number_of_workers: int) -> List[Tuple[int, int]]:
     range_number = math.ceil(counted_ips / current_number_of_workers)
