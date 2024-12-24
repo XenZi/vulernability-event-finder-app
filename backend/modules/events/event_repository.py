@@ -1,11 +1,11 @@
 
 import datetime
 from http.client import HTTPException
-from time import timezone
 from modules.events.events_schemas import Event, ReceivedEvent
 from shared.dependencies import Session
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
+from config.logger_config import logger
 
 from shared.enums import EventStatus, PriorityLevel
 from shared.exceptions import DatabaseFailedOperation
@@ -78,3 +78,22 @@ async def get_all_events_by_asset_id(session: Session, asset_id: int, page: int 
         raise DatabaseFailedOperation(500, f"Database error: {str(e)}")
     except Exception as e:
         raise DatabaseFailedOperation(500, f"Unexpected error: {str(e)}")
+    
+async def write_statement(session: Session, statement: str, expected_rows: int) -> bool:
+    try:
+        logger.info("Writing statment to DB")
+        insert_query = text(statement)
+        result = session.execute(insert_query)
+        # if result.rowcount != expected_rows:
+        #     session.rollback()
+        #     raise HTTPException(500, f"Database error: {str(e)}")
+        session.commit()
+        return True
+    except SQLAlchemyError as e:
+        session.rollback()
+        raise HTTPException(500, f"Database error: {str(e)}")
+    except Exception as e:
+        raise HTTPException(500, f"Unexpected error: {str(e)}")
+   
+
+

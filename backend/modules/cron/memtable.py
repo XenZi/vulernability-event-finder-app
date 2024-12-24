@@ -6,6 +6,7 @@ from typing import Dict
 class Entry(TypedDict):
     timestamp: datetime
     data: str
+    expected_rows: int
 
 
 
