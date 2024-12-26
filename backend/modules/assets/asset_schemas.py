@@ -10,13 +10,13 @@ class AssetRegister(BaseModel):
 class Asset(BaseModel):
     id: int 
     ip: str
-    notification_priority_level: PriorityLevel = PriorityLevel.Minor
+    notification_priority_level: PriorityLevel = PriorityLevel.low
     creation_date: datetime = datetime.now(timezone.utc)
     user: UserDTO
 
 class AssetDTO(BaseModel):
     id: int 
     ip: str
-    notification_priority_level: PriorityLevel = PriorityLevel.Minor
+    notification_priority_level: PriorityLevel = PriorityLevel.low
     creation_date: datetime = datetime.now(timezone.utc)
     user_id: int

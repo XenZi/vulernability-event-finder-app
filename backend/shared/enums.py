@@ -1,10 +1,10 @@
 from enum import Enum
 
 class PriorityLevel(Enum):
-    Critical = 3
-    Major = 2
-    Minor = 1
-    NoPriority = 0
+    high = 3
+    medium = 2
+    low = 1
+    noPriority = 0
 
 class EventStatus(Enum):
     Discovered = 0
