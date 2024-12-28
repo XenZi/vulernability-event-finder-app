@@ -18,6 +18,8 @@ class ManagedQueue:
         self.queue.task_done()
 
     async def wait_until_empty(self):
+        print("Waiting for queue to be empty!")
         await self.queue.join()
+        print("Queue is empty!")
 
 
