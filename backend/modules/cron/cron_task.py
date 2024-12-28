@@ -1,19 +1,20 @@
 import asyncio
 from datetime import datetime
 import math
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 import httpx
 from config.config import settings
 from modules.assets import asset_service
+from modules.cron import managed_queue
 from modules.events.event_repository import write_statement
 from shared.dependencies import  get_db
 from config.logger_config import logger
-from modules.cron.memtable import memtable_dict, Entry
+from modules.cron.managed_queue import ManagedQueue
 from shared.enums import PriorityLevel
 
-async def process_event_gather(start_point, end_point, session):
+async def process_event_gather(managed_queue, start_point, end_point, session):
     try:
         ips = await asset_service.get_all_ips_in_range(session, start_point, end_point)
         # print(ips)
@@ -24,13 +25,11 @@ async def process_event_gather(start_point, end_point, session):
             gather_time = datetime.now()
             response = await client.get(base_url, headers=headers)
             response.raise_for_status()  
-            logger.info(f"Task for range {start_point}-{end_point} completed with status: {response.status_code}")
+            # logger.info(f"Task for range {start_point}-{end_point} completed with status: {response.status_code}")
             events_data = response.json()["data"]["data"]
             key = f'{start_point}-{end_point}'
             sql_data = await format_SQL_statement(events_data,ips,gather_time)
-            # print(f'DATA: {sql_data}')
-
-            memtable_dict[key] = Entry(timestamp=datetime.now(), data=sql_data[0], expected_rows=sql_data[1])
+            await managed_queue.add((key, sql_data))
 
     except httpx.RequestError as e:
         logger.error(f"Network error for range {start_point}-{end_point}: {e}")
@@ -50,34 +49,41 @@ async def worker_event_gather(task_queue, worker_id, session):
 
         start_point, end_point = task
         print(f"Worker {worker_id} is processing task: {start_point}-{end_point}")
-        await process_event_gather(start_point, end_point, session)
+        await process_event_gather(task_queue, start_point, end_point, session)
         print(f"Worker {worker_id} completed task: {start_point}-{end_point}")
         task_queue.task_done()
 
 
 async def event_gather_task():
-    task_queue = asyncio.Queue()
-    workers = []
+    managed_queue = ManagedQueue()
+    producers = []
+    consumers = []
     sessionDB = next(get_db())
     counted_assets = await asset_service.count_all_assets(sessionDB)
     current_number_of_workers = get_number_of_workers(counted_assets)
     ranges = format_range(counted_assets, current_number_of_workers)
 
     for start_point, end_point in ranges:
-        await task_queue.put((start_point, end_point))
+        await managed_queue.add((start_point, end_point))
 
     for worker_id in range(1, current_number_of_workers + 1):  
-        workers.append(asyncio.create_task(worker_event_gather(task_queue, worker_id, sessionDB)))
+        producers.append(asyncio.create_task(worker_event_gather(managed_queue, worker_id, sessionDB)))
 
-    await task_queue.join()
+    for consumer_id in range(1, current_number_of_workers + 1):
+        consumers.append(asyncio.create_task(worker_db_persist(
+            managed_queue,
+            consumer_id,
+            sessionDB
+        )))
+    await asyncio.gather(*producers)
+    await managed_queue.wait_until_empty()
 
-    for _ in workers:
-        await task_queue.put(None)
+    for consumer in consumers:
+        consumer.cancel()
 
-    test = await asyncio.gather(*workers)
-    if len(test) == current_number_of_workers:
-        await db_persist_task(memtable_dict)
-        task_queue.shutdown()
+    await asyncio.gather(*consumers, return_exceptions=True)
+    print('All tasks are done finally')
+
 
 async def process_db_persist(index_points, session, sql_statement):
     # print("WRITING DATA: ----------------------")
@@ -85,51 +91,22 @@ async def process_db_persist(index_points, session, sql_statement):
     # print(f'Session is alive: {session.is_active}')
     # print("WRITING DATA: ----------------------")
     await asyncio.sleep(1) # forces the workers to be assigned tasks in case that the workload isnt enough to ensure load distribution
-    result = await write_statement(session,memtable_dict[index_points].get("data"), memtable_dict[index_points].get("expected_rows"))
-    if result:
-        del memtable_dict[index_points]
 
 
 async def worker_db_persist(task_queue, worker_id, session):
     while True:
+        # print(f'Kreiramo consumera: {worker_id}')
         task = await task_queue.get()
-        if task is None:  
-            print(f"Worker {worker_id} is stopping transaction.")
-            break
-
-        index_points = task
-        sql_statement = memtable_dict.get(index_points).get("data")
-        print(f"Worker {worker_id} is processing task: {index_points} transaction")
-        await process_db_persist(index_points, session, sql_statement)
-        print(f"Worker {worker_id} completed task: {index_points} transaction")
+        index_points, test = task
+        print(f'Index points {index_points} u {worker_id}')
         task_queue.task_done()
-
-
-async def db_persist_task(memtable_dict):
-    workers = []
-    task_queue = asyncio.Queue()
-    sessionDB = next(get_db())
-    ranges = list(memtable_dict.keys())
-    for key in ranges:
-        await task_queue.put((key))
-    for worker_id in range(0, len(ranges)):
-        print("NEW WORKER ID ", worker_id)
-        workers.append(asyncio.create_task(worker_db_persist(task_queue, worker_id, sessionDB)))
-
-    await task_queue.join()
-
-    for _ in workers:
-        await task_queue.put(None)
-
-    await asyncio.gather(*workers)    
-    task_queue.shutdown()
 
 
 scheduler = BackgroundScheduler()
 
 scheduler.add_job(
     func=lambda: asyncio.run(event_gather_task()),
-    trigger=IntervalTrigger(seconds=10),
+    trigger=IntervalTrigger(seconds=3),
     id="example_task",
     name="Example task that runs every 5 seconds",
 )
