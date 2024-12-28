@@ -10,9 +10,9 @@ class Event(BaseModel):
     host: str
     port: str
     priority: PriorityLevel
-    location: str
+    category_name: str
     creation_date: datetime
-    last_occurance: datetime
+    last_occurrence: datetime
     asset_id: int
 
 

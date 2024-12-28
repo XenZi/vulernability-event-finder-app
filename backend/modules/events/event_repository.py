@@ -14,14 +14,14 @@ from shared.exceptions import DatabaseFailedOperation
 async def create_new_event(session: Session, receivedEvent: ReceivedEvent, asset_id: int) -> Event | None:
     try:
         insert_query = text("""
-            INSERT INTO Event (uuid, status, host, port, priority, location, last_occurrence, asset_id)
+            INSERT INTO Event (uuid, status, host, port, priority, category_name, last_occurrence, asset_id)
             VALUES (
                 :uuid,
                 :status,
                 :host,
                 :port,
                 :priority,
-                :location,
+                :category_name,
                 :last_occurrence,
                 :asset_id
             )
@@ -35,7 +35,7 @@ async def create_new_event(session: Session, receivedEvent: ReceivedEvent, asset
             "host": receivedEvent.ip,
             "port": receivedEvent.port,
             "priority": PriorityLevel[receivedEvent.urgency.title()].value,  # Ensure title matches Enum keys
-            "location": "",  # Empty string as default
+            "category_name": "",  # Empty string as default
             "last_occurrence": datetime.datetime.now(),  # Use actual datetime instance
             "asset_id": asset_id,
         })
@@ -79,14 +79,11 @@ async def get_all_events_by_asset_id(session: Session, asset_id: int, page: int 
     except Exception as e:
         raise DatabaseFailedOperation(500, f"Unexpected error: {str(e)}")
     
-async def write_statement(session: Session, statement: str, expected_rows: int) -> bool:
+async def write_statement(session: Session, statement: str) -> bool:
     try:
         logger.info("Writing statment to DB")
         insert_query = text(statement)
         result = session.execute(insert_query)
-        # if result.rowcount != expected_rows:
-        #     session.rollback()
-        #     raise HTTPException(500, f"Database error: {str(e)}")
         session.commit()
         return True
     except SQLAlchemyError as e:

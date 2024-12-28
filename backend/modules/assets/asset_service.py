@@ -3,23 +3,29 @@ from modules.assets import asset_mapper
 from modules.assets.asset_schemas import Asset, AssetDTO, AssetRegister
 from sqlalchemy.orm import Session
 from modules.assets import asset_repository
+from modules.events import event_service
 from modules.user import user_mapper
 from shared.exceptions import AuthenticationFailedException, EntityNotFound, DuplicateEntity, DatabaseFailedOperation, Unauthorized
 from modules.user.user_schemas import UserDTO
 from shared.enums import PriorityLevel
 from datetime import datetime
-from modules.assets.asset_mapper import asset_to_DTO, assetList_to_DTOList
+from shared.api_utils import send_get_request_to_api
+
+
 
 async def create_asset(session: Session, user: UserDTO, asset: AssetRegister) -> AssetDTO:
     asset_db = Asset(
         id=0,
         ip=asset.ip,
-        notification_priority_level=PriorityLevel.Low,
+        notification_priority_level=PriorityLevel.low,
         creation_date=datetime.now(),
         user=user
     )
     try:
         result = await asset_repository.create_asset(session, asset_db)
+        result_from_api = await send_get_request_to_api([result.ip])
+        created_event = await event_service.create_event(session, result_from_api["data"]["data"], result.id)
+        print(created_event)
     except DuplicateEntity as e:
         raise e  
     except Exception as e:
