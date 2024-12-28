@@ -85,11 +85,13 @@ async def write_statement(session: Session, statement: str) -> bool:
         insert_query = text(statement)
         result = session.execute(insert_query)
         session.commit()
+
         return True
     except SQLAlchemyError as e:
         session.rollback()
         raise HTTPException(500, f"Database error: {str(e)}")
     except Exception as e:
+        session.rollback()
         raise HTTPException(500, f"Unexpected error: {str(e)}")
    
 

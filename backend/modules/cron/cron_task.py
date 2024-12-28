@@ -82,12 +82,12 @@ async def worker_event_gather(producer_queue, consumer_queue, worker_id, session
 
 async def process_db_persist(index_points, session, sql_statement):
     # await asyncio.sleep(1) # forces the workers to be assigned tasks in case that the workload isnt enough to ensure load distribution
-    split_index_points = index_points.split("-")
+    # split_index_points = index_points.split("-")
     try:
         result = await write_statement(session, sql_statement)
         print(f"Result je {result}")
     except Exception as e:
-        print(f" xaxa {e}")
+        print(f"{e}")
 
 async def worker_db_persist(persist_queue, worker_id, session):
     while True:
@@ -137,6 +137,7 @@ async def event_gather_task():
     await consumers_queue.join()
 
     print("All tasks are done finally")
+
 
 scheduler = BackgroundScheduler()
 
