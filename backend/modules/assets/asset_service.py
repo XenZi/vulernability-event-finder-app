@@ -9,8 +9,10 @@ from shared.exceptions import AuthenticationFailedException, EntityNotFound, Dup
 from modules.user.user_schemas import UserDTO
 from shared.enums import PriorityLevel
 from datetime import datetime
-from modules.assets.asset_mapper import asset_to_DTO, assetList_to_DTOList
 from shared.api_utils import send_get_request_to_api
+
+
+
 async def create_asset(session: Session, user: UserDTO, asset: AssetRegister) -> AssetDTO:
     asset_db = Asset(
         id=0,

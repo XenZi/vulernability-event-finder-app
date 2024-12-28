@@ -140,9 +140,9 @@ async def event_gather_task():
 
 scheduler = BackgroundScheduler()
 
-# scheduler.add_job(
-#     func=lambda: asyncio.run(event_gather_task()),
-#     trigger=DateTrigger(run_date=datetime.now()),
-#     id="example_task",
-#     name="Example task that runs only once",
-# )
+scheduler.add_job(
+    func=lambda: asyncio.run(event_gather_task()),
+    trigger=DateTrigger(run_date=datetime.now()),
+    id="example_task",
+    name="Example task that runs only once",
+)

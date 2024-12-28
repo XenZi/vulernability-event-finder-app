@@ -20,3 +20,7 @@ async def create_event(session: Session, createdEvent: list, asset_id: int) -> b
     if event is None:
         raise DatabaseFailedOperation(500, "Database failed")
     return event
+
+async def get_all_events_by_asset_id(session: Session, asset_id: int) -> list[Event]:
+    events = await event_repository.get_all_events_by_asset_id(session, asset_id)
+    return events
