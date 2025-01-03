@@ -7,6 +7,7 @@ class CustomTextField extends StatelessWidget {
   final bool obscureText;
   final TextInputType keyboardType;
   final String? hintText;
+  final String? Function(String?)? validator;
 
   const CustomTextField({
     super.key,
@@ -15,56 +16,47 @@ class CustomTextField extends StatelessWidget {
     this.obscureText = false,
     this.keyboardType = TextInputType.text,
     this.hintText,
+    this.validator,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Focus(
-      child: Builder(
-        builder: (BuildContext context) {
-          final bool hasFocus = Focus.of(context).hasFocus;
-
-          return TextField(
-            controller: controller,
-            obscureText: obscureText,
-            keyboardType: keyboardType,
-            style: AppTheme.bodyTextStyle,
-            cursorColor: Colors.white,
-            decoration: InputDecoration(
-              labelText: labelText,
-              labelStyle: AppTheme.bodyTextStyle,
-              hintText: hintText,
-              hintStyle: AppTheme.bodyTextStyle.copyWith(color: Colors.grey),
-              filled: true,
-              fillColor:
-                  AppTheme.textColor.withOpacity(0.1), // Background color
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(
-                  color: hasFocus
-                      ? AppTheme.titleColor
-                      : Colors.grey, // Focus changes border color
-                  width: 2,
-                ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(
-                  color: Colors.grey, // Default border color
-                  width: 2,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(
-                  color: AppTheme.titleColor, // Green border on focus
-                  width: 2,
-                ),
-              ),
-            ),
-          );
-        },
+    return TextFormField(
+      controller: controller,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      style: AppTheme.bodyTextStyle,
+      cursorColor: Colors.white,
+      decoration: InputDecoration(
+        labelText: labelText,
+        labelStyle: AppTheme.bodyTextStyle,
+        hintText: hintText,
+        hintStyle: AppTheme.bodyTextStyle.copyWith(color: Colors.grey),
+        filled: true,
+        fillColor: AppTheme.textColor.withOpacity(0.1), // Background color
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: Colors.grey, // Default border color
+            width: 2,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: Colors.grey, // Default border color
+            width: 2,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: AppTheme.titleColor, // Focused border color
+            width: 2,
+          ),
+        ),
       ),
+      validator: validator,
     );
   }
 }
