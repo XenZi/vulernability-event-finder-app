@@ -10,8 +10,6 @@ class CustomButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
   final ButtonStyleType styleType;
-  // final double? width;
-  // final double? height;
 
   const CustomButton({
     super.key,
@@ -46,8 +44,6 @@ class CustomButton extends StatelessWidget {
           );
 
     return SizedBox(
-      // width: width,
-      // height: height,
       child: ElevatedButton(
         style: buttonStyle,
         onPressed: onPressed,

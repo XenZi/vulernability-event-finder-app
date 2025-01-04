@@ -7,7 +7,8 @@ class CustomTextField extends StatelessWidget {
   final bool obscureText;
   final TextInputType keyboardType;
   final String? hintText;
-  final String? Function(String?)? validator;
+  final List<String? Function(String?)>?
+      validators; // Accept multiple validators
 
   const CustomTextField({
     super.key,
@@ -16,8 +17,20 @@ class CustomTextField extends StatelessWidget {
     this.obscureText = false,
     this.keyboardType = TextInputType.text,
     this.hintText,
-    this.validator,
+    this.validators,
   });
+
+  /// Combines multiple validators into one.
+  String? _combineValidators(String? value) {
+    if (validators == null) return null;
+    for (final validator in validators!) {
+      final result = validator(value);
+      if (result != null) {
+        return result;
+      }
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +69,7 @@ class CustomTextField extends StatelessWidget {
           ),
         ),
       ),
-      validator: validator,
+      validator: _combineValidators, // Use the combined validators
     );
   }
 }
