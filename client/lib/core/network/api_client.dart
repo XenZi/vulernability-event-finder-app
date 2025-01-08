@@ -1,8 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class ApiClient {
-  final String _baseUrl = 'http://localhost:8000';
+  final String _baseUrl = 'http://192.168.0.27:8000';
 
   Future<http.Response> get(String endpoint, String? token) async {
     final url = Uri.parse('$_baseUrl$endpoint');
@@ -12,7 +13,12 @@ class ApiClient {
     if (token != null) {
       headers['Authorization'] = 'Bearer $token';
     }
-    return await http.get(url, headers: headers);
+    try {
+      return await http.get(url, headers: headers);
+    } catch (e) {
+      print(e.toString());
+      throw Exception(e);
+    }
   }
 
   Future<http.Response> post(
@@ -26,6 +32,12 @@ class ApiClient {
       headers['Authorization'] = 'Bearer $token';
     }
 
-    return await http.post(url, headers: headers, body: jsonEncode(body));
+    final response =
+        await http.post(url, headers: headers, body: json.encode(body));
+
+    if (response.statusCode >= 400) {
+      throw HttpException(json.decode(response.body)['message']);
+    }
+    return response;
   }
 }

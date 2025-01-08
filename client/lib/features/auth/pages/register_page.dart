@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:client/core/network/api_client.dart';
 import 'package:client/shared/components/button_component.dart';
 import 'package:client/shared/components/textfield_component.dart';
+import 'package:client/shared/components/toast_component.dart';
 import 'package:client/shared/utils/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:client/core/theme/app_theme.dart';
@@ -20,17 +23,19 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController passwordController = TextEditingController();
 
   void _register(String email, String password) async {
-    // Perform register action
-    print("Registering...");
-    final response = await apiClient.post(
-      '/register',
-      {
-        'email': email,
-        'password': password,
-      },
-      null,
-    );
-    print(response.body);
+    try {
+      await apiClient.post(
+        '/register',
+        {
+          'email': email,
+          'password': password,
+        },
+        null,
+      );
+      context.go('/login');
+    } on HttpException catch (e) {
+      ErrorToast.show(context, e.message, backgroundColor: Colors.red);
+    }
   }
 
   @override

@@ -5,6 +5,7 @@ class AppTheme {
   static const Color backgroundColor = Color(0xFF212428);
   static const Color titleColor = Color(0xFF009E66);
   static const Color textColor = Color(0xFFD3D3D4);
+  static const Color darkerBackgroundColor = Color(0xFF1B1D20);
 
   // Define text styles
   static const TextStyle titleStyle = TextStyle(

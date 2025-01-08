@@ -37,6 +37,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: 
   go_router: 
+  flutter_secure_storage:
 dev_dependencies:
   flutter_test:
     sdk: flutter

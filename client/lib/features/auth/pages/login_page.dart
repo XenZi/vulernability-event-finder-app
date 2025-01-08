@@ -1,36 +1,58 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:client/core/network/api_client.dart';
+import 'package:client/core/security/secure_storage.dart';
+import 'package:client/features/auth/providers/user_provider.dart';
 import 'package:client/shared/components/button_component.dart';
 import 'package:client/shared/components/textfield_component.dart';
+import 'package:client/shared/components/toast_component.dart';
 import 'package:client/shared/utils/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:client/core/theme/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
   final apiClient = ApiClient();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   void _login(String email, String password) async {
-    // Perform login action
-    print("Logging in...");
-    final response = await apiClient.post(
-      '/login',
-      {
-        'email': email,
-        'password': password,
-      },
-      null,
-    );
-    print(response.body);
+    if (!mounted) return; // Ensure the widget is still mounted at the start.
+
+    try {
+      final response = await apiClient.post(
+        '/login',
+        {
+          'email': email,
+          'password': password,
+        },
+        null,
+      );
+      final responseData = json.decode(response.body);
+
+      await SecureStorage.saveToken(responseData['token']);
+      ref.read(userProvider.notifier).updateEmail(email);
+
+      if (mounted) {
+        // Check if the widget is still mounted before using context.
+        context.go('/home');
+      }
+    } on HttpException catch (e) {
+      if (mounted) {
+        // Check again before using context.
+        ErrorToast.show(context, e.message, backgroundColor: Colors.red);
+      }
+    }
   }
 
   @override
