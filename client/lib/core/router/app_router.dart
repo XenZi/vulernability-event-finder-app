@@ -1,3 +1,4 @@
+import 'package:client/features/assets/pages/assets_page.dart';
 import 'package:client/features/assets/pages/home_page.dart';
 import 'package:client/features/auth/pages/login_page.dart';
 import 'package:client/features/auth/pages/register_page.dart';
@@ -16,7 +17,7 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => RegisterPage(),
     ),
     GoRoute(
-      path: '/home',
+      path: '/',
       builder: (context, state) => HomePage(),
     ),
     GoRoute(
@@ -26,7 +27,11 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/event/:id',
       builder: (context, state) => EventPage(),
+    ),
+    GoRoute(
+      path: '/assets',
+      builder: (context, state) => AssetListPage(),
     )
   ],
-  initialLocation: '/login', // Default route when the app starts
+  initialLocation: '/', // Default route when the app starts
 );
