@@ -1,21 +1,18 @@
 import asyncio
 from datetime import datetime, timedelta
 import math
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 from apscheduler.triggers.date import DateTrigger
 from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.triggers.interval import IntervalTrigger
 import httpx
 from config.config import settings
 from modules.assets import asset_service
-from modules.cron import managed_queue
 from modules.events.event_repository import write_statement
 from shared.api_utils import send_get_request_to_api
 from shared.dependencies import  get_db
 from config.logger_config import logger
-from modules.cron.managed_queue import ManagedQueue
-from shared.enums import PriorityLevel
 from shared.database_operations_utils import format_SQL_statement;
+from modules.events import event_service
 
 
 def format_range(counted_ips: int, current_number_of_workers: int) -> List[Tuple[int, int]]:
@@ -137,7 +134,18 @@ async def event_gather_task():
     await consumers_queue.join()
 
     print("All tasks are done finally")
+    print("gahtering data for notifs")
 
+    notification_data = await event_service.prepare_event_notifications(sessionDB)
+    print(notification_data)
+
+
+async def notification_task():
+    print("starting notification task")
+    notification_queue = asyncio.Queue()
+    sessionDB = next(get_db())
+    notification_data = await event_service.prepare_event_notifications(sessionDB)
+    print(notification_data)
 
 scheduler = BackgroundScheduler()
 
@@ -147,3 +155,10 @@ scheduler.add_job(
     id="example_task",
     name="Example task that runs only once",
 )
+
+# scheduler.add_job(
+#     func=lambda: asyncio.run(notification_task()),
+#     trigger=DateTrigger(run_date=datetime.now() + timedelta(seconds=20)),
+#     id="example_task_2",
+#     name="Example task that runs only once",
+# )

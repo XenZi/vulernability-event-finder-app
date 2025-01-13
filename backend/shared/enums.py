@@ -1,6 +1,7 @@
 from enum import Enum
 
 class PriorityLevel(Enum):
+    noNotification = 4
     high = 3
     medium = 2
     low = 1

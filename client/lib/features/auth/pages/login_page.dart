@@ -1,9 +1,10 @@
 import 'package:client/core/network/api_client.dart';
+import 'package:client/core/theme/app_theme.dart';
 import 'package:client/shared/components/button_component.dart';
 import 'package:client/shared/components/textfield_component.dart';
 import 'package:client/shared/utils/validators.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:client/core/theme/app_theme.dart';
 import 'package:go_router/go_router.dart';
 
 class LoginPage extends StatefulWidget {
@@ -18,6 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
 
   void _login(String email, String password) async {
     // Perform login action
@@ -38,6 +40,25 @@ class _LoginPageState extends State<LoginPage> {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Request for notification permissions (important for iOS)
+    messaging.requestPermission();
+
+    // Get the FCM token when the app starts
+    messaging.getToken().then((token) {
+      print("FCM Token: $token");
+      // Now you can send this token to your backend server for future use
+    });
+
+    // Handling foreground messages
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print("Received a message: ${message.notification?.title}");
+    });
   }
 
   @override
