@@ -46,11 +46,11 @@ class CustomTextField extends StatelessWidget {
         hintText: hintText,
         hintStyle: AppTheme.bodyTextStyle.copyWith(color: Colors.grey),
         filled: true,
-        fillColor: AppTheme.textColor.withOpacity(0.1), // Background color
+        fillColor: AppTheme.textColor.withOpacity(0.1),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(
-            color: Colors.grey, // Default border color
+            color: Colors.grey,
             width: 2,
           ),
         ),

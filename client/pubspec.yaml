@@ -38,6 +38,8 @@ dependencies:
   cupertino_icons: 
   go_router: 
   flutter_secure_storage:
+  fl_chart:
+  flutter_carousel_widget:
 dev_dependencies:
   flutter_test:
     sdk: flutter

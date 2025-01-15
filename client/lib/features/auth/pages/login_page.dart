@@ -17,10 +17,10 @@ class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  LoginPageState createState() => LoginPageState();
 }
 
-class _LoginPageState extends ConsumerState<LoginPage> {
+class LoginPageState extends ConsumerState<LoginPage> {
   final apiClient = ApiClient();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
@@ -50,7 +50,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     } on HttpException catch (e) {
       if (mounted) {
         // Check again before using context.
-        ErrorToast.show(context, e.message, backgroundColor: Colors.red);
+        ToastBar.show(
+          context,
+          e.message,
+          style: ToastBarStyle.error,
+        );
       }
     }
   }
@@ -98,7 +102,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 label: "Login",
                 onPressed: () {
                   if (!formKey.currentState!.validate()) {
-                    print("Validation failed");
                     return;
                   }
                   _login(emailController.text, passwordController.text);

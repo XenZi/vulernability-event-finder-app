@@ -34,7 +34,11 @@ class _RegisterPageState extends State<RegisterPage> {
       );
       context.go('/login');
     } on HttpException catch (e) {
-      ErrorToast.show(context, e.message, backgroundColor: Colors.red);
+      ToastBar.show(
+        context,
+        e.message,
+        style: ToastBarStyle.error,
+      );
     }
   }
 
@@ -81,7 +85,6 @@ class _RegisterPageState extends State<RegisterPage> {
                 label: "Register",
                 onPressed: () {
                   if (!formKey.currentState!.validate()) {
-                    print("Validation failed");
                     return;
                   }
                   _register(emailController.text, passwordController.text);

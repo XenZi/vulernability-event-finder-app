@@ -1,93 +1,174 @@
+import 'package:client/core/network/api_client.dart';
+import 'package:client/shared/components/bottom_selection_menu.dart';
+import 'package:client/shared/components/toast_component.dart';
+import 'package:client/shared/models/menu_option.dart';
+import 'package:client/shared/models/priority.enum.dart';
+import 'package:flutter/material.dart';
 import 'package:client/core/theme/app_theme.dart';
 import 'package:client/shared/components/circle_icon.dart';
 import 'package:client/shared/models/assets.dart';
-import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class AssetCard extends StatelessWidget {
   final Asset asset;
-  static const Map<String, Color> priorityColors = {
-    "High": Colors.red,
-    "Medium": Colors.orange,
-    "Low": Colors.green,
-    "No Priority": Colors.grey,
-  };
+  final ApiClient apiClient;
 
   const AssetCard({
-    Key? key,
+    super.key,
     required this.asset,
-  }) : super(key: key);
+    required this.apiClient,
+  });
+
+  List<MenuOption> _getMenuItems(BuildContext context) => Priority.values
+      .map(
+        (priority) => MenuOption(
+          text: priority.label,
+          icon: Icons.priority_high,
+          iconColor: priority.color,
+          onTap: () => _changePriorityOfAnAsset(context, priority),
+        ),
+      )
+      .toList();
+
+  Future<void> _changePriorityOfAnAsset(
+      BuildContext context, Priority priority) async {
+    try {
+      await apiClient.put(
+          "/assets/update",
+          {
+            "id": asset.id,
+            "ip": asset.ip,
+            "notification_priority_level": priority.index,
+            "user_id": asset.userId,
+          },
+          "dadada");
+      if (context.mounted) {
+        ToastBar.show(
+          context,
+          "Priority updated successfully.",
+          style: ToastBarStyle.success,
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ToastBar.show(
+          context,
+          e.toString(),
+          style: ToastBarStyle.error,
+        );
+      }
+    }
+  }
+
+  void _showPrioritySelection(BuildContext context) {
+    DynamicSelectionMenu.show(
+      context: context,
+      options: _getMenuItems(context),
+    );
+  }
+
+  void _confirmDeletion(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.backgroundColor,
+        title: Text(
+          'Confirm Deletion',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: AppTheme.textColor),
+        ),
+        content: Text(
+          'Are you sure you want to delete this asset?',
+          style: TextStyle(color: AppTheme.textColor),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              // Trigger deletion logic
+              Navigator.of(context).pop();
+            },
+            child: Text('Delete', style: TextStyle(color: Colors.redAccent)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('Cancel', style: TextStyle(color: AppTheme.textColor)),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    print(asset.creationDate);
-    return Card(
-      color: AppTheme.backgroundColor.withOpacity(0.9),
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-      child: ListTile(
-        leading: Container(
-          decoration: BoxDecoration(
-            color: AppTheme.titleColor.withOpacity(0.2),
-            shape: BoxShape.circle,
-          ),
-          padding: const EdgeInsets.all(8),
-          child: const Icon(
-            Icons.storage,
-            color: AppTheme.titleColor,
-          ),
-        ),
-        title: Text(
-          asset.ip,
-          style: TextStyle(
-              color: AppTheme.textColor,
-              fontWeight: FontWeight.bold,
-              fontSize: 16),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Created: ${asset.creationDate.toLocal().toString().split(" ")[0]}',
-              style: TextStyle(color: AppTheme.textColor),
-            ),
-            Row(
+    return GestureDetector(
+        onTap: () => {context.go("/events/${asset.id}")},
+        child: Card(
+          color: AppTheme.backgroundColor.withOpacity(0.9),
+          margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Row(
               children: [
-                Text(
-                  'Notification Type: ',
-                  style: TextStyle(color: AppTheme.textColor, fontSize: 12),
+                CircleIconButton(
+                  icon: Icons.storage,
+                  color: AppTheme.titleColor,
+                  size: 24,
                 ),
-                Text(
-                  asset.notificationPriorityLevel,
-                  style: TextStyle(
-                      color: priorityColors[asset.notificationPriorityLevel] ??
-                          Colors.grey,
-                      fontSize: 12),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(asset.ip,
+                          style: TextStyle(color: AppTheme.textColor)),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Created: ${asset.creationDate.toLocal().toString().split(" ")[0]}',
+                        style: TextStyle(color: AppTheme.textColor),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Text('Priority: ',
+                              style: TextStyle(color: AppTheme.textColor)),
+                          Text(
+                            asset.notificationPriorityLevel,
+                            style: TextStyle(
+                              color: Priority.values
+                                  .firstWhere(
+                                    (p) =>
+                                        p.label ==
+                                        asset.notificationPriorityLevel,
+                                    orElse: () => Priority.none,
+                                  )
+                                  .color,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Wrap(
+                  spacing: 8,
+                  children: [
+                    CircleIconButton(
+                      icon: Icons.edit,
+                      color: Colors.orange,
+                      size: 20,
+                      onPressed: () => _showPrioritySelection(context),
+                    ),
+                    CircleIconButton(
+                      icon: Icons.delete,
+                      color: Colors.red,
+                      size: 20,
+                      onPressed: () => _confirmDeletion(context),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
-        trailing: Wrap(
-          spacing: 3,
-          children: [
-            CircleIconButton(
-              icon: Icons.edit,
-              color: Colors.orange,
-              size: 16,
-              onPressed: () => {
-                print("Edit Asset ID: ${asset.id}"),
-              },
-            ),
-            CircleIconButton(
-              icon: Icons.delete,
-              color: Colors.red,
-              size: 20,
-              onPressed: () => {
-                print("Delete Asset ID: ${asset.id}"),
-              },
-            ),
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 }

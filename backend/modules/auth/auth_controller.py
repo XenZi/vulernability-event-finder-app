@@ -7,7 +7,7 @@ from shared.dependencies import SessionDep
 
 router = APIRouter()
 
-@router.post("/register/", response_model=UserDTO, status_code=status.HTTP_201_CREATED)
+@router.post("/register", response_model=UserDTO, status_code=status.HTTP_201_CREATED)
 async def register(session: SessionDep, user_in: UserRegister) -> UserDTO:
     return await auth_service.register_user(session, user_in)
 

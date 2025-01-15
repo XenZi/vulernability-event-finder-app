@@ -1,17 +1,18 @@
+import 'package:client/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class CircleIconButton extends StatelessWidget {
   final IconData icon;
   final Color color;
   final double size;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   const CircleIconButton({
     super.key,
     required this.icon,
     required this.color,
     this.size = 24.0,
-    required this.onPressed,
+    this.onPressed,
   });
 
   @override
@@ -19,11 +20,11 @@ class CircleIconButton extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: color.withOpacity(0.1), // Light circular background
+        color: color.withOpacity(0.8), // Light circular background
       ),
       child: IconButton(
         onPressed: onPressed,
-        icon: Icon(icon, color: color, size: size),
+        icon: Icon(icon, color: AppTheme.backgroundColor, size: size),
         constraints: const BoxConstraints(
           minWidth: 36,
           minHeight: 36,

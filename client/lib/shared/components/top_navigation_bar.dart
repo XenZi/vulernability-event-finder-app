@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class TopNavigationBar extends StatelessWidget implements PreferredSizeWidget {
-  String userImageUrl = "https://robohash.org/user.png";
-  int notificationsCount = 0;
+  final String userImageUrl = "https://robohash.org/user.png";
+  final int notificationsCount = 0;
 
-  TopNavigationBar({
+  const TopNavigationBar({
     super.key,
   });
 
