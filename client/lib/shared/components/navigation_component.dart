@@ -13,16 +13,12 @@ class NavigationComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Use GoRouter to get the current route
-    final String currentPath = GoRouter.of(context)
-        .routeInformationProvider
-        .value
-        .uri
-        .path; // Simplified to get current location
+    final String currentPath =
+        GoRouter.of(context).routeInformationProvider.value.uri.path;
     final int currentIndex =
         _navItems.indexWhere((item) => item.route == currentPath);
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         border: Border(
           top: BorderSide(
             color: AppTheme.titleColor,

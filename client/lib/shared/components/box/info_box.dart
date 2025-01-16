@@ -1,5 +1,3 @@
-import 'package:client/core/theme/app_theme.dart';
-import 'package:client/shared/components/circle_icon.dart';
 import 'package:flutter/material.dart';
 
 class InfoBox extends StatelessWidget {
@@ -17,31 +15,47 @@ class InfoBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
       decoration: BoxDecoration(
-        color: AppTheme.darkerBackgroundColor,
-        borderRadius: BorderRadius.circular(12.0),
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(16.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8.0,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-      // width: 150,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          CircleIconButton(icon: icon, color: AppTheme.titleColor),
-          const SizedBox(height: 8.0),
+          Container(
+            padding: const EdgeInsets.all(12.0),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              size: 28,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+          const SizedBox(height: 12.0),
           Text(
             title,
-            style: TextStyle(
-              color: AppTheme.titleColor,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
           ),
           const SizedBox(height: 8.0),
           Text(
             text,
-            style: TextStyle(
-              color: AppTheme.textColor,
-              fontSize: 14,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
             textAlign: TextAlign.center,
           ),
         ],

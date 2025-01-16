@@ -26,31 +26,50 @@ class AppTheme {
     fontWeight: FontWeight.normal,
   );
 
-  // Create a ThemeData object
+  // Create a ThemeData object for light theme
   static ThemeData get lightTheme {
     return ThemeData(
       scaffoldBackgroundColor: backgroundColor,
       primaryColor: titleColor,
+      appBarTheme: AppBarTheme(
+        backgroundColor: darkerBackgroundColor,
+        titleTextStyle: titleStyle,
+        iconTheme: IconThemeData(color: textColor),
+      ),
+      buttonTheme: ButtonThemeData(
+        buttonColor: titleColor,
+        textTheme: ButtonTextTheme.primary,
+      ),
       textTheme: const TextTheme(
-        displayLarge: titleStyle, // Large titles
-        titleLarge: titleStyle, // Page titles
-        titleSmall: smallTextStyle, // Smaller text
-        bodyLarge: bodyTextStyle, // Regular text
-        bodyMedium: bodyTextStyle, // Alternate regular text
+        headlineLarge: titleStyle, // For large titles
+        titleLarge: titleStyle, // For page titles
+        bodyLarge: bodyTextStyle, // For regular text
+        bodyMedium: bodyTextStyle, // For alternate regular text
+        bodySmall: smallTextStyle, // For smaller text
       ),
     );
   }
 
+  // Create a ThemeData object for dark theme
   static ThemeData get darkTheme {
     return ThemeData.dark().copyWith(
       scaffoldBackgroundColor: backgroundColor,
       primaryColor: titleColor,
+      appBarTheme: AppBarTheme(
+        backgroundColor: darkerBackgroundColor,
+        titleTextStyle: titleStyle,
+        iconTheme: IconThemeData(color: textColor),
+      ),
+      buttonTheme: ButtonThemeData(
+        buttonColor: titleColor,
+        textTheme: ButtonTextTheme.primary,
+      ),
       textTheme: const TextTheme(
-        displayLarge: titleStyle,
+        headlineLarge: titleStyle,
         titleLarge: titleStyle,
         bodyLarge: bodyTextStyle,
         bodyMedium: bodyTextStyle,
-        titleSmall: smallTextStyle,
+        bodySmall: smallTextStyle,
       ),
     );
   }

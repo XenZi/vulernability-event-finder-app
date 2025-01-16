@@ -72,26 +72,27 @@ class AssetCard extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppTheme.backgroundColor,
-        title: Text(
+        title: const Text(
           'Confirm Deletion',
           textAlign: TextAlign.center,
           style: TextStyle(color: AppTheme.textColor),
         ),
-        content: Text(
+        content: const Text(
           'Are you sure you want to delete this asset?',
           style: TextStyle(color: AppTheme.textColor),
         ),
         actions: [
           TextButton(
             onPressed: () {
-              // Trigger deletion logic
               Navigator.of(context).pop();
             },
-            child: Text('Delete', style: TextStyle(color: Colors.redAccent)),
+            child:
+                const Text('Delete', style: TextStyle(color: Colors.redAccent)),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('Cancel', style: TextStyle(color: AppTheme.textColor)),
+            child: const Text('Cancel',
+                style: TextStyle(color: AppTheme.textColor)),
           ),
         ],
       ),
@@ -120,16 +121,16 @@ class AssetCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(asset.ip,
-                          style: TextStyle(color: AppTheme.textColor)),
+                          style: const TextStyle(color: AppTheme.textColor)),
                       const SizedBox(height: 4),
                       Text(
                         'Created: ${asset.creationDate.toLocal().toString().split(" ")[0]}',
-                        style: TextStyle(color: AppTheme.textColor),
+                        style: const TextStyle(color: AppTheme.textColor),
                       ),
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          Text('Priority: ',
+                          const Text('Priority: ',
                               style: TextStyle(color: AppTheme.textColor)),
                           Text(
                             asset.notificationPriorityLevel,

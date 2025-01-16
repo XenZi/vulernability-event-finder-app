@@ -6,8 +6,13 @@ class PieChartSample extends StatefulWidget {
   final List<Map<String, int>> data;
   final List<Color> colors;
   final bool showPercentage;
+  final String chartTitle; // Added title property
+
   PieChartSample(
-      {required this.data, required this.colors, required this.showPercentage});
+      {required this.data,
+      required this.colors,
+      required this.showPercentage,
+      required this.chartTitle});
 
   @override
   PieChartSampleState createState() => PieChartSampleState();
@@ -25,6 +30,17 @@ class PieChartSampleState extends State<PieChartSample> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          SizedBox(height: 10),
+          Text(
+            widget.chartTitle, // Display the chart title
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.titleColor,
+            ),
+          ),
+          SizedBox(height: 16), // Adds space between the title and the chart
           Flexible(
             child: PieChart(
               PieChartData(
@@ -49,6 +65,9 @@ class PieChartSampleState extends State<PieChartSample> {
               ),
             ),
           ),
+          const SizedBox(
+            height: 20,
+          ),
           Wrap(
             alignment: WrapAlignment.center,
             spacing: 12.0,
@@ -56,9 +75,20 @@ class PieChartSampleState extends State<PieChartSample> {
             children: widget.data.asMap().entries.map((entry) {
               final index = entry.key;
               final label = entry.value.keys.first;
-              return Indicator(
-                color: widget.colors[index],
-                text: label,
+
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  double maxIndicatorWidth =
+                      MediaQuery.of(context).size.width / 5;
+
+                  return ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: maxIndicatorWidth),
+                    child: Indicator(
+                      color: widget.colors[index],
+                      text: label,
+                    ),
+                  );
+                },
               );
             }).toList(),
           )
@@ -106,7 +136,7 @@ class Indicator extends StatelessWidget {
             color: color,
           ),
         ),
-        SizedBox(height: 4), // Adds space between the container and the text
+        SizedBox(height: 4),
         Text(
           text[0].toUpperCase() + text.substring(1),
           textAlign: TextAlign.center,

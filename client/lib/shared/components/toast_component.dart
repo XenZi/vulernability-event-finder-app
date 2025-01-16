@@ -86,7 +86,6 @@ class ToastBar {
       ),
     );
 
-    // Ensure only one toast is displayed at a time
     if (_toasts.isNotEmpty) {
       _toasts.last.remove();
     }

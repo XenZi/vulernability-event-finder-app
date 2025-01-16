@@ -20,7 +20,7 @@ class DynamicSelectionMenu {
                 leading: Icon(option.icon, color: option.iconColor),
                 title: Text(
                   option.text,
-                  style: TextStyle(color: AppTheme.textColor),
+                  style: const TextStyle(color: AppTheme.textColor),
                 ),
                 onTap: () {
                   Navigator.pop(context); // Close the menu

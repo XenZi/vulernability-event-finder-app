@@ -7,8 +7,7 @@ class CustomTextField extends StatelessWidget {
   final bool obscureText;
   final TextInputType keyboardType;
   final String? hintText;
-  final List<String? Function(String?)>?
-      validators; // Accept multiple validators
+  final List<String? Function(String?)>? validators;
 
   const CustomTextField({
     super.key,
@@ -20,7 +19,6 @@ class CustomTextField extends StatelessWidget {
     this.validators,
   });
 
-  /// Combines multiple validators into one.
   String? _combineValidators(String? value) {
     if (validators == null) return null;
     for (final validator in validators!) {
@@ -49,7 +47,7 @@ class CustomTextField extends StatelessWidget {
         fillColor: AppTheme.textColor.withOpacity(0.1),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
             color: Colors.grey,
             width: 2,
           ),
@@ -57,19 +55,19 @@ class CustomTextField extends StatelessWidget {
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(
-            color: Colors.grey, // Default border color
+            color: Colors.grey,
             width: 2,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(
-            color: AppTheme.titleColor, // Focused border color
+            color: AppTheme.titleColor,
             width: 2,
           ),
         ),
       ),
-      validator: _combineValidators, // Use the combined validators
+      validator: _combineValidators,
     );
   }
 }

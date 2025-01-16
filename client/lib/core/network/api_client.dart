@@ -3,21 +3,16 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class ApiClient {
-  // Private constructor
   ApiClient._internal();
 
-  // Static instance of the class
   static final ApiClient _instance = ApiClient._internal();
 
-  // Factory constructor to return the same instance
   factory ApiClient() {
     return _instance;
   }
 
-  // Base URL for API
-  final String _baseUrl = 'http://192.168.0.27:8000';
+  final String _baseUrl = 'http://172.20.10.5:8000';
 
-  // GET request
   Future<http.Response> get(String endpoint, String? token) async {
     final url = Uri.parse('$_baseUrl$endpoint');
     Map<String, String> headers = {
@@ -26,8 +21,14 @@ class ApiClient {
     if (token != null) {
       headers['Authorization'] = 'Bearer $token';
     }
+
     try {
-      return await http.get(url, headers: headers);
+      final response = await http.get(url, headers: headers);
+
+      if (response.statusCode >= 400) {
+        throw HttpException(json.decode(response.body)['message']);
+      }
+      return response;
     } catch (e) {
       print(e.toString());
       throw Exception(e);

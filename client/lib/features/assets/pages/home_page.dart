@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:client/core/network/api_client.dart';
+import 'package:client/core/theme/app_theme.dart';
+import 'package:client/shared/components/box/info_box.dart';
 import 'package:client/shared/components/charts/bar-chart.widget.dart';
 import 'package:client/shared/components/charts/pie-chart.widget.dart';
 import 'package:client/shared/components/global_scaffold.dart';
@@ -80,16 +82,13 @@ class _HomePageState extends State<HomePage> {
 
       final rawData = json.decode(response.body) as List<dynamic>;
 
-      // Transform to a List<Map<String, int>> by explicitly casting
       final transformedData = rawData.map((item) {
-        final map = item as Map<String, dynamic>; // Decode each item
-        return map.map(
-            (key, value) => MapEntry(key, value as int)); // Cast values to int
+        final map = item as Map<String, dynamic>;
+        return map.map((key, value) => MapEntry(key, value as int));
       }).toList();
 
       setState(() {
         byMonth = transformedData;
-        print("$byMonth DJAJDAJSDASDASDAS");
         isLoading = false;
       });
     } catch (e) {
@@ -101,29 +100,68 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  List<Color> generateRandomColors(int count) {
+    final Random random = Random();
+    final Set<Color> uniqueColors = {};
+
+    while (uniqueColors.length < count) {
+      final color = Color.fromARGB(
+        255,
+        random.nextInt(256),
+        random.nextInt(256),
+        random.nextInt(256),
+      );
+
+      uniqueColors.add(color);
+    }
+
+    return uniqueColors.toList();
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Center(
+        child: GlobalScaffold(
+          child: Center(
+            child: CircularProgressIndicator(
+              color: AppTheme.titleColor,
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (errorMessage != null) {
+      return Center(
+        child: Text(errorMessage!),
+      );
+    }
+
     return GlobalScaffold(
         child: Column(
       children: [
         FlutterCarousel(
           items: [
             PieChartSample(
+              chartTitle: "Event Priorities",
               data: eventPrioritiesData?.entries
                       .map((entry) => {entry.key: entry.value})
                       .toList() ??
                   [],
-              colors: [Colors.green, Colors.orange, Colors.red],
+              colors: const [Colors.green, Colors.orange, Colors.red],
               showPercentage: true,
             ),
             PieChartSample(
+                chartTitle: "Event Categories",
                 data: categories?.entries
                         .map((entry) => {entry.key: entry.value})
                         .toList() ??
                     [],
                 colors: generateRandomColors(categories!.length),
                 showPercentage: false),
-            BarChartSample1(
+            CustomBarChart(
+              title: "Events by Month",
               data: byMonth!,
             )
           ],
@@ -133,27 +171,23 @@ class _HomePageState extends State<HomePage> {
               enlargeCenterPage: true,
               enableInfiniteScroll: false,
               showIndicator: false),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: const [
+            InfoBox(
+              title: "Assets",
+              icon: Icons.pie_chart_outline,
+              text: "You have 12 assets",
+            ),
+            InfoBox(
+              title: "Events",
+              icon: Icons.event_note,
+              text: "You have 5 events",
+            ),
+          ],
         )
       ],
     ));
-  }
-
-  List<Color> generateRandomColors(int count) {
-    final Random random = Random();
-    final Set<Color> uniqueColors = {};
-
-    while (uniqueColors.length < count) {
-      // Generate random RGB values
-      final color = Color.fromARGB(
-        255, // Full opacity
-        random.nextInt(256), // Red
-        random.nextInt(256), // Green
-        random.nextInt(256), // Blue
-      );
-
-      uniqueColors.add(color); // Ensure uniqueness by using a Set
-    }
-
-    return uniqueColors.toList(); // Convert the Set to a List
   }
 }

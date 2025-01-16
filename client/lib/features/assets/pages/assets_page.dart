@@ -64,12 +64,7 @@ class AssetListPageState extends State<AssetListPage> {
             hintText: 'Type something...',
             validators: [validateRequiredField, validateIPAddress],
             onSubmit: (input) {
-              if (input.isNotEmpty) {
-                print('User Input: $input');
-                Navigator.pop(context);
-              } else {
-                print('Input is required.');
-              }
+              Navigator.pop(context);
             },
           );
         });
@@ -87,7 +82,7 @@ class AssetListPageState extends State<AssetListPage> {
         ),
       ),
       child: isLoading
-          ? Center(
+          ? const Center(
               child: CircularProgressIndicator(),
             )
           : errorMessage != null
@@ -98,7 +93,7 @@ class AssetListPageState extends State<AssetListPage> {
                   ),
                 )
               : assets.isEmpty
-                  ? Center(
+                  ? const Center(
                       child: Text(
                         'No assets available!',
                         style: TextStyle(fontSize: 18, color: Colors.grey),

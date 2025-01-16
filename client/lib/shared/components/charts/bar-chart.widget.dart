@@ -2,20 +2,21 @@ import 'package:client/core/theme/app_theme.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-class BarChartSample1 extends StatefulWidget {
+class CustomBarChart extends StatefulWidget {
   final List<Map<String, int>> data;
+  final String title; // Added custom title parameter
 
-  BarChartSample1({super.key, required this.data});
+  CustomBarChart({super.key, required this.data, required this.title});
 
   final Color barBackgroundColor = Colors.white.withOpacity(0.3);
   final Color barColor = AppTheme.titleColor;
   final Color touchedBarColor = AppTheme.textColor;
 
   @override
-  State<StatefulWidget> createState() => BarChartSample1State();
+  State<StatefulWidget> createState() => CustomBarChartState();
 }
 
-class BarChartSample1State extends State<BarChartSample1> {
+class CustomBarChartState extends State<CustomBarChart> {
   final Duration animDuration = const Duration(milliseconds: 250);
 
   int touchedIndex = -1;
@@ -41,6 +42,18 @@ class BarChartSample1State extends State<BarChartSample1> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
+                Text(
+                  widget.title, // Use custom title
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.titleColor,
+                  ),
+                ),
+                const SizedBox(
+                  height: 16, // Space between title and chart
+                ),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
