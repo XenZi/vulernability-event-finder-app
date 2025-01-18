@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:client/core/network/api_client.dart';
-import 'package:client/shared/components/button_component.dart';
-import 'package:client/shared/components/textfield_component.dart';
-import 'package:client/shared/components/toast_component.dart';
+import 'package:client/shared/components/buttons/button_component.dart';
+import 'package:client/shared/components/inputs/textfield_component.dart';
+import 'package:client/shared/components/toast/toast_component.dart';
 import 'package:client/shared/utils/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:client/core/theme/app_theme.dart';

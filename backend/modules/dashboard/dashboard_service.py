@@ -39,7 +39,7 @@ async def get_recent_events(session: Session, current_user: UserDTO) -> dict:
 async def get_number_of_events_by_month(session: Session, current_user: UserDTO) -> list[dict]:
     # Fetch the original data
     events_by_month = await dashboard_repository.get_number_of_events_by_month(session, current_user.id)
-    
+
     # Mapping month numbers to short names
     month_short_names = {
         1: "JAN", 2: "FEB", 3: "MAR", 4: "APR",
@@ -56,5 +56,6 @@ async def get_number_of_events_by_month(session: Session, current_user: UserDTO)
         month_short_name = month_short_names[month_number]
         # Add to the result
         formatted_data.append({month_short_name: event["event_count"]})
-    print(formatted_data)
+
     return formatted_data
+

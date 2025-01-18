@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from http.client import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import text
@@ -146,6 +147,8 @@ async def get_recent_events(session: Session, user_id: int) -> dict:
 
 async def get_number_of_events_by_month(session: Session, user_id: int) -> list[dict]:
     try:
+        # Fetch data for the last 6 months from the database
+        six_months_ago = (datetime.now() - timedelta(days=6*30)).strftime("%Y-%m-%d")
         select_query = text("""
         SELECT 
             DATE_FORMAT(e.creation_date, '%Y-%m') AS event_month, 
@@ -155,19 +158,34 @@ async def get_number_of_events_by_month(session: Session, user_id: int) -> list[
         INNER JOIN 
             Asset a ON e.asset_id = a.id
         WHERE 
-            a.user_id = :user_id
+            a.user_id = :user_id AND e.creation_date >= :six_months_ago
         GROUP BY 
             DATE_FORMAT(e.creation_date, '%Y-%m')
         ORDER BY 
             event_month;
         """)
-        result = session.execute(select_query, {"user_id": user_id}).fetchall()
+        result = session.execute(select_query, {"user_id": user_id, "six_months_ago": six_months_ago}).fetchall()
 
-        if not result:
-            return []
+        # Convert the result to a dictionary for easy lookup
+        event_counts = {row[0]: row[1] for row in result}
 
-        # Convert the result to a list of dictionaries
-        return [{"event_month": row[0], "event_count": row[1]} for row in result]
+        # Calculate the last 6 months in '%Y-%m' format
+        current_date = datetime.now()
+        last_6_months = [
+            (current_date - timedelta(days=30 * i)).strftime("%Y-%m")
+            for i in range(6)
+        ][::-1]  # Reverse to get chronological order
+
+        # Include all months and fill missing ones with 0
+        final_result = []
+        for month in last_6_months:
+            final_result.append({
+                "event_month": month,
+                "event_count": event_counts.get(month, 0)
+            })
+
+        return final_result
+
     except SQLAlchemyError as e:
         raise DatabaseFailedOperation(500, f"Database error: {str(e)}")
     except Exception as e:

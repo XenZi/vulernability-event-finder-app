@@ -1,6 +1,6 @@
 import 'package:client/core/theme/app_theme.dart';
-import 'package:client/shared/components/navigation_component.dart';
-import 'package:client/shared/components/top_navigation_bar.dart';
+import 'package:client/shared/components/navbars/navigation_component.dart';
+import 'package:client/shared/components/navbars/top_navigation_bar.dart';
 import 'package:flutter/material.dart';
 
 class GlobalScaffold extends StatelessWidget {

@@ -1,9 +1,9 @@
 import 'package:client/core/network/api_client.dart';
 import 'package:client/core/theme/app_theme.dart';
-import 'package:client/features/assets/widgets/asset_cart.dart';
-import 'package:client/shared/components/bottom_input_modal.dart';
-import 'package:client/shared/models/assets.dart';
-import 'package:client/shared/components/global_scaffold.dart';
+import 'package:client/features/assets/widgets/asset-cart.widget.dart';
+import 'package:client/shared/components/inputs/bottom_input_modal.dart';
+import 'package:client/shared/models/assets.model.dart';
+import 'package:client/shared/components/scaffolds/global_scaffold.dart';
 import 'package:client/shared/utils/validators.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';

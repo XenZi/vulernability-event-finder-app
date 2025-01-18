@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 
-enum Priority {
+enum PriorityLevel {
   high,
   medium,
   low,
   none;
 
   String get label => {
-        Priority.high: 'High',
-        Priority.medium: 'Medium',
-        Priority.low: 'Low',
-        Priority.none: 'No Priority',
+        PriorityLevel.high: 'High',
+        PriorityLevel.medium: 'Medium',
+        PriorityLevel.low: 'Low',
+        PriorityLevel.none: 'No Priority',
       }[this]!;
 
   Color get color => {
-        Priority.high: Colors.red,
-        Priority.medium: Colors.orange,
-        Priority.low: Colors.green,
-        Priority.none: Colors.grey,
+        PriorityLevel.high: Colors.red,
+        PriorityLevel.medium: Colors.orange,
+        PriorityLevel.low: Colors.green,
+        PriorityLevel.none: Colors.grey,
       }[this]!;
 }

@@ -1,12 +1,12 @@
 import 'package:client/core/network/api_client.dart';
-import 'package:client/shared/components/bottom_selection_menu.dart';
-import 'package:client/shared/components/toast_component.dart';
-import 'package:client/shared/models/menu_option.dart';
+import 'package:client/shared/components/selections/bottom_selection_menu.dart';
+import 'package:client/shared/components/toast/toast_component.dart';
+import 'package:client/shared/models/menu-option.model.dart';
 import 'package:client/shared/models/priority.enum.dart';
 import 'package:flutter/material.dart';
 import 'package:client/core/theme/app_theme.dart';
-import 'package:client/shared/components/circle_icon.dart';
-import 'package:client/shared/models/assets.dart';
+import 'package:client/shared/components/icons/circle_icon.dart';
+import 'package:client/shared/models/assets.model.dart';
 import 'package:go_router/go_router.dart';
 
 class AssetCard extends StatelessWidget {
@@ -19,7 +19,7 @@ class AssetCard extends StatelessWidget {
     required this.apiClient,
   });
 
-  List<MenuOption> _getMenuItems(BuildContext context) => Priority.values
+  List<MenuOption> _getMenuItems(BuildContext context) => PriorityLevel.values
       .map(
         (priority) => MenuOption(
           text: priority.label,
@@ -31,7 +31,7 @@ class AssetCard extends StatelessWidget {
       .toList();
 
   Future<void> _changePriorityOfAnAsset(
-      BuildContext context, Priority priority) async {
+      BuildContext context, PriorityLevel priority) async {
     try {
       await apiClient.put(
           "/assets/update",
@@ -135,12 +135,12 @@ class AssetCard extends StatelessWidget {
                           Text(
                             asset.notificationPriorityLevel,
                             style: TextStyle(
-                              color: Priority.values
+                              color: PriorityLevel.values
                                   .firstWhere(
                                     (p) =>
                                         p.label ==
                                         asset.notificationPriorityLevel,
-                                    orElse: () => Priority.none,
+                                    orElse: () => PriorityLevel.none,
                                   )
                                   .color,
                             ),

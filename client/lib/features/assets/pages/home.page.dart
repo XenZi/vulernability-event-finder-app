@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:client/core/network/api_client.dart';
 import 'package:client/core/theme/app_theme.dart';
-import 'package:client/shared/components/box/info_box.dart';
+import 'package:client/shared/components/box/box-with-title.widget.dart';
+import 'package:client/shared/components/box/info-box.widget.dart';
 import 'package:client/shared/components/charts/bar-chart.widget.dart';
 import 'package:client/shared/components/charts/pie-chart.widget.dart';
-import 'package:client/shared/components/global_scaffold.dart';
+import 'package:client/shared/components/scaffolds/global_scaffold.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -78,8 +78,6 @@ class _HomePageState extends State<HomePage> {
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqb2huLmRvZUBleGFtcGxlLmNvbSIsImV4cCI6MjI3MzY4NDUyMzh9.cpUMRBf4XUL-AtFb5dkrJAm9UtoN5seJfxFBoizGhtY",
       );
 
-      print("API Response: ${response.body}");
-
       final rawData = json.decode(response.body) as List<dynamic>;
 
       final transformedData = rawData.map((item) {
@@ -92,7 +90,6 @@ class _HomePageState extends State<HomePage> {
         isLoading = false;
       });
     } catch (e) {
-      print("Error in fetchEventsByMonth: $e");
       setState(() {
         errorMessage = 'Error: ${e.toString()}';
         isLoading = false;
@@ -133,18 +130,19 @@ class _HomePageState extends State<HomePage> {
     }
 
     if (errorMessage != null) {
-      return Center(
-        child: Text(errorMessage!),
+      return GlobalScaffold(
+        child: Center(
+          child: Text(errorMessage!),
+        ),
       );
     }
-
     return GlobalScaffold(
-        child: Column(
-      children: [
-        FlutterCarousel(
-          items: [
-            PieChartSample(
-              chartTitle: "Event Priorities",
+        child: SingleChildScrollView(
+      child: Column(
+        children: [
+          BoxWithTitle(
+            title: "Event Priorities",
+            child: PieChartSample(
               data: eventPrioritiesData?.entries
                       .map((entry) => {entry.key: entry.value})
                       .toList() ??
@@ -152,42 +150,46 @@ class _HomePageState extends State<HomePage> {
               colors: const [Colors.green, Colors.orange, Colors.red],
               showPercentage: true,
             ),
-            PieChartSample(
-                chartTitle: "Event Categories",
-                data: categories?.entries
-                        .map((entry) => {entry.key: entry.value})
-                        .toList() ??
-                    [],
-                colors: generateRandomColors(categories!.length),
-                showPercentage: false),
-            CustomBarChart(
-              title: "Events by Month",
+          ),
+          // InvoiceTableScreen(),
+
+          const SizedBox(height: 16.0),
+          BoxWithTitle(
+            title: "Event Categories",
+            child: PieChartSample(
+              data: categories?.entries
+                      .map((entry) => {entry.key: entry.value})
+                      .toList() ??
+                  [],
+              colors: generateRandomColors(categories!.length),
+              showPercentage: false,
+            ),
+          ),
+          const SizedBox(height: 16.0),
+          BoxWithTitle(
+            title: "Monthly Events",
+            child: CustomBarChart(
               data: byMonth!,
-            )
-          ],
-          options: FlutterCarouselOptions(
-              height: MediaQuery.of(context).size.height / 2,
-              autoPlay: false,
-              enlargeCenterPage: true,
-              enableInfiniteScroll: false,
-              showIndicator: false),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: const [
-            InfoBox(
-              title: "Assets",
-              icon: Icons.pie_chart_outline,
-              text: "You have 12 assets",
             ),
-            InfoBox(
-              title: "Events",
-              icon: Icons.event_note,
-              text: "You have 5 events",
-            ),
-          ],
-        )
-      ],
+          ),
+          const SizedBox(height: 16.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              InfoBox(
+                title: "Assets",
+                icon: Icons.pie_chart_outline,
+                text: "You have 12 assets",
+              ),
+              InfoBox(
+                title: "Events",
+                icon: Icons.event_note,
+                text: "You have 5 events",
+              ),
+            ],
+          ),
+        ],
+      ),
     ));
   }
 }

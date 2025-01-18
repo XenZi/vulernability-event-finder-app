@@ -1,5 +1,5 @@
 import 'package:client/core/theme/app_theme.dart';
-import 'package:client/shared/models/menu_option.dart';
+import 'package:client/shared/models/menu-option.model.dart';
 import 'package:flutter/material.dart';
 
 class DynamicSelectionMenu {

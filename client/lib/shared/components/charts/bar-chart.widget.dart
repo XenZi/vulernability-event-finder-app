@@ -4,9 +4,8 @@ import 'package:flutter/material.dart';
 
 class CustomBarChart extends StatefulWidget {
   final List<Map<String, int>> data;
-  final String title; // Added custom title parameter
 
-  CustomBarChart({super.key, required this.data, required this.title});
+  CustomBarChart({super.key, required this.data});
 
   final Color barBackgroundColor = Colors.white.withOpacity(0.3);
   final Color barColor = AppTheme.titleColor;
@@ -42,18 +41,6 @@ class CustomBarChartState extends State<CustomBarChart> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                Text(
-                  widget.title, // Use custom title
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.titleColor,
-                  ),
-                ),
-                const SizedBox(
-                  height: 16, // Space between title and chart
-                ),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),

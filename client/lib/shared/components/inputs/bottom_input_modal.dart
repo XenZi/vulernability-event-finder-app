@@ -1,6 +1,6 @@
 import 'package:client/core/theme/app_theme.dart';
-import 'package:client/shared/components/button_component.dart';
-import 'package:client/shared/components/textfield_component.dart';
+import 'package:client/shared/components/buttons/button_component.dart';
+import 'package:client/shared/components/inputs/textfield_component.dart';
 import 'package:flutter/material.dart';
 
 class BottomInputModal extends StatefulWidget {

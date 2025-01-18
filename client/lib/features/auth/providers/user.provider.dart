@@ -1,4 +1,4 @@
-import 'package:client/shared/models/user_state.dart';
+import 'package:client/shared/models/user-state.model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UserNotifier extends StateNotifier<UserState> {
