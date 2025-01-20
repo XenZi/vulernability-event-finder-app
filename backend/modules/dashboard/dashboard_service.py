@@ -27,7 +27,7 @@ async def get_notification_priority_distribution(session: Session, current_user:
 
     return returned_dictionary
 
-async def get_top_hosts(session: Session, current_user: UserDTO) -> dict:
+async def get_top_hosts(session: Session, current_user: UserDTO) -> list:
     returned_dictionary = await dashboard_repository.get_top_hosts(session, current_user.id)
     return returned_dictionary
 

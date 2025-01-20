@@ -35,7 +35,6 @@ class ApiClient {
     }
   }
 
-  // POST request
   Future<http.Response> post(
       String endpoint, Map<String, dynamic> body, String? token) async {
     final url = Uri.parse('$_baseUrl$endpoint');

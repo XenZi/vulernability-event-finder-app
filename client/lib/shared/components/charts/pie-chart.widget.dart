@@ -81,7 +81,8 @@ class PieChartSampleState extends State<PieChartSample> {
                       constraints: BoxConstraints(maxWidth: maxIndicatorWidth),
                       child: Indicator(
                         color: widget.colors[index],
-                        text: label,
+                        text:
+                            "$label (${widget.showPercentage ? '${(entry.value.values.first / total * 100).toStringAsFixed(1)}%' : entry.value.values.first.toString()})",
                       ),
                     );
                   },
@@ -105,8 +106,9 @@ class PieChartSampleState extends State<PieChartSample> {
       return PieChartSectionData(
         color: widget.colors[index],
         value: value.toDouble(),
-        title:
-            '${widget.showPercentage ? '${(value / total * 100).toStringAsFixed(1)}%' : value}',
+        showTitle: false,
+        // title:
+        //     '${widget.showPercentage ? '${(value / total * 100).toStringAsFixed(1)}%' : value}',
         radius: radius,
         titleStyle: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold),
       );

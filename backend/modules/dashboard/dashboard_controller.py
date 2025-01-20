@@ -28,10 +28,10 @@ async def get_number_of_events_by_month(session: SessionDep, current_user: Curre
 # async def get_notification_priority_distribution(session: SessionDep, current_user: CurrentUser) -> dict:
 #     return await dashboard_service.get_notification_priority_distribution(session=session, current_user=current_user)
 
-# @router.get("/top-hosts")
-# async def get_top_hosts(session: SessionDep, current_user: CurrentUser) -> dict:
-#     return await dashboard_service.get_top_hosts(session=session, current_user=current_user)
+@router.get("/top-hosts")
+async def get_top_hosts(session: SessionDep, current_user: CurrentUser) -> list:
+    return await dashboard_service.get_top_hosts(session=session, current_user=current_user)
 
-# @router.get("/recent-updates")
-# async def get_recent_events(session: SessionDep, current_user: CurrentUser) -> dict:
-#     return await dashboard_service.get_recent_events(session=session, current_user=current_user)
+@router.get("/recent-updates")
+async def get_recent_events(session: SessionDep, current_user: CurrentUser) -> dict:
+    return await dashboard_service.get_recent_events(session=session, current_user=current_user)

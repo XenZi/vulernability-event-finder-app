@@ -56,3 +56,31 @@ class Event {
     };
   }
 }
+
+class MostRecentEvent {
+  final int id;
+  final PriorityLevel priority;
+  final String categoryName;
+
+  MostRecentEvent({
+    required this.id,
+    required this.priority,
+    required this.categoryName,
+  });
+
+  factory MostRecentEvent.fromJson(Map<String, dynamic> json) {
+    return MostRecentEvent(
+      id: json['event_id'],
+      priority: PriorityLevel.values[json['priority']],
+      categoryName: json['category_name'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'priority': priority.index,
+      'category_name': categoryName,
+    };
+  }
+}

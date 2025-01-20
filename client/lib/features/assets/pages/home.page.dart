@@ -7,6 +7,10 @@ import 'package:client/shared/components/box/info-box.widget.dart';
 import 'package:client/shared/components/charts/bar-chart.widget.dart';
 import 'package:client/shared/components/charts/pie-chart.widget.dart';
 import 'package:client/shared/components/scaffolds/global_scaffold.dart';
+import 'package:client/shared/models/event.model.dart';
+import 'package:client/shared/models/ip-asset-with-event-number.model.dart';
+import 'package:client/shared/tables/ip-with-number-of-events.table.dart';
+import 'package:client/shared/tables/most-recent-events.table.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -20,6 +24,8 @@ class _HomePageState extends State<HomePage> {
   Map<String, int>? eventPrioritiesData = {};
   Map<String, int>? categories = {};
   List<Map<String, int>>? byMonth = [];
+  List<MostRecentEvent> mostRecentEvents = [];
+  List<HostEvent> hostEvents = [];
   bool isLoading = true;
   String? errorMessage;
 
@@ -29,6 +35,61 @@ class _HomePageState extends State<HomePage> {
     fetchDashboardEventPrioritiesData();
     fetchDashboardCategoriesData();
     fetchEventsByMonth();
+    fetchMostRecentEventsForDashboardTable();
+    fetchTopHostsForDashboard();
+  }
+
+  Future<void> fetchTopHostsForDashboard() async {
+    try {
+      final response = await ApiClient().get('/dashboard/top-hosts',
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqb2huLmRvZUBleGFtcGxlLmNvbSIsImV4cCI6MjI3MzY4NDUyMzh9.cpUMRBf4XUL-AtFb5dkrJAm9UtoN5seJfxFBoizGhtY");
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+
+        setState(() {
+          hostEvents = data.map((item) => HostEvent.fromJson(item)).toList();
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          errorMessage = 'Failed to load data: ${response.statusCode}';
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print(e.toString());
+      setState(() {
+        errorMessage = 'Error: ${e.toString()}';
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> fetchMostRecentEventsForDashboardTable() async {
+    try {
+      final response = await ApiClient().get('/dashboard/recent-updates',
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqb2huLmRvZUBleGFtcGxlLmNvbSIsImV4cCI6MjI3MzY4NDUyMzh9.cpUMRBf4XUL-AtFb5dkrJAm9UtoN5seJfxFBoizGhtY");
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        setState(() {
+          mostRecentEvents = (data['data'] as List)
+              .map((item) => MostRecentEvent.fromJson(item))
+              .toList();
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          errorMessage = 'Failed to load data: ${response.statusCode}';
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print(e.toString());
+      setState(() {
+        errorMessage = 'Error: ${e.toString()}';
+        isLoading = false;
+      });
+    }
   }
 
   Future<void> fetchDashboardEventPrioritiesData() async {
@@ -151,8 +212,9 @@ class _HomePageState extends State<HomePage> {
               showPercentage: true,
             ),
           ),
-          // InvoiceTableScreen(),
-
+          MostRecentEventsTable(
+            events: mostRecentEvents,
+          ),
           const SizedBox(height: 16.0),
           BoxWithTitle(
             title: "Event Categories",
@@ -166,6 +228,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           const SizedBox(height: 16.0),
+          IpEventTable(ipEventData: hostEvents),
           BoxWithTitle(
             title: "Monthly Events",
             child: CustomBarChart(
@@ -174,7 +237,7 @@ class _HomePageState extends State<HomePage> {
           ),
           const SizedBox(height: 16.0),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               InfoBox(
                 title: "Assets",

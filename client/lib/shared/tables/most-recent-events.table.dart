@@ -1,72 +1,31 @@
 import 'package:client/core/theme/app_theme.dart';
-import 'package:client/shared/models/event-status.enum.dart';
 import 'package:client/shared/models/event.model.dart';
-import 'package:client/shared/models/priority.enum.dart';
 import 'package:flutter/material.dart';
 
-class InvoiceTableScreen extends StatelessWidget {
-  final List<Event> events = [
-    Event(
-      id: 1,
-      uuid: "uuid1",
-      status: EventStatus.Discovered,
-      host: "localhost",
-      port: "8080",
-      priority: PriorityLevel.high,
-      categoryName: "System Logs",
-      creationDate: DateTime.now(),
-      lastOccurrence: DateTime.now(),
-      assetId: 101,
-    ),
-    Event(
-      id: 2,
-      uuid: "uuid2",
-      status: EventStatus.Acknowledged,
-      host: "192.168.1.1",
-      port: "3306",
-      priority: PriorityLevel.medium,
-      categoryName: "Database Issues",
-      creationDate: DateTime.now().subtract(Duration(days: 1)),
-      lastOccurrence: DateTime.now(),
-      assetId: 102,
-    ),
-    Event(
-      id: 3,
-      uuid: "uuid3",
-      status: EventStatus.Removed,
-      host: "10.0.0.1",
-      port: "22",
-      priority: PriorityLevel.low,
-      categoryName: "Network Alerts",
-      creationDate: DateTime.now().subtract(Duration(days: 2)),
-      lastOccurrence: DateTime.now(),
-      assetId: 103,
-    ),
-    Event(
-      id: 4,
-      uuid: "uuid4",
-      status: EventStatus.FalsePositive,
-      host: "remotehost",
-      port: "443",
-      priority: PriorityLevel.none,
-      categoryName: "User Events",
-      creationDate: DateTime.now().subtract(Duration(days: 3)),
-      lastOccurrence: DateTime.now(),
-      assetId: 104,
-    ),
-  ];
+class MostRecentEventsTable extends StatelessWidget {
+  final List<MostRecentEvent> events;
+
+  const MostRecentEventsTable({
+    super.key,
+    required this.events, // Accept the events as a prop
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppTheme.backgroundColor,
+      color: AppTheme.darkerBackgroundColor,
+      margin: const EdgeInsets.all(16.0),
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Invoices",
-            style: AppTheme.titleStyle,
+            "Most Recent Events",
+            style: TextStyle(
+              fontSize: 16,
+              color: AppTheme.titleColor,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 16.0),
           Container(
@@ -78,7 +37,7 @@ class InvoiceTableScreen extends StatelessWidget {
               columnWidths: const {
                 0: FlexColumnWidth(1), // ID
                 1: FlexColumnWidth(2), // Category Name
-                2: FlexColumnWidth(2), // Priority
+                2: FlexColumnWidth(1), // Priority
               },
               border: TableBorder(
                 horizontalInside: BorderSide(
@@ -106,7 +65,9 @@ class InvoiceTableScreen extends StatelessWidget {
                       children: [
                         _buildDataCell(event.id.toString()),
                         _buildDataCell(event.categoryName),
-                        _buildDataCell(event.priority.label),
+                        _buildDataCell(event.priority.label,
+                            backgroundColor: event.priority.color,
+                            align: TextAlign.center),
                       ],
                     )),
               ],
@@ -127,12 +88,19 @@ class InvoiceTableScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDataCell(String text) {
+  Widget _buildDataCell(String text,
+      {Color? backgroundColor, TextAlign? align}) {
     return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Text(
-        text,
-        style: AppTheme.bodyTextStyle,
+      padding: const EdgeInsets.all(12.0), // Outer padding for the entire cell
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+            horizontal: 4.0, vertical: 2.0), // Inner padding around the text
+        color: backgroundColor, // Background color directly around the text
+        child: Text(
+          text,
+          style: AppTheme.bodyTextStyle,
+          textAlign: align,
+        ),
       ),
     );
   }
