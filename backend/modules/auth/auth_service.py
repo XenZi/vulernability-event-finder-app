@@ -110,8 +110,3 @@ async def activate_account(session: Session, token: str) -> UserDTO:
     except Exception as e:
         raise InvalidToken(400, "Invalid or expired token") from e
 
-    
-
-
-
-

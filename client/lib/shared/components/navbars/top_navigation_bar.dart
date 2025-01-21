@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class TopNavigationBar extends StatelessWidget implements PreferredSizeWidget {
-  String userImageUrl = "https://robohash.org/user.png";
-  int notificationsCount = 0;
+  final String userImageUrl = "https://robohash.org/user.png";
+  final int notificationsCount = 0;
 
-  TopNavigationBar({
+  const TopNavigationBar({
     super.key,
   });
 
@@ -15,17 +15,16 @@ class TopNavigationBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: AppTheme.backgroundColor,
       elevation: 4,
-      title: Text(
+      title: const Text(
         'Event App',
         style: TextStyle(color: AppTheme.titleColor),
       ),
       centerTitle: false,
       actions: [
-        // Notification Icon with Badge
         Stack(
           children: [
             IconButton(
-              icon: Icon(Icons.notifications, color: AppTheme.titleColor),
+              icon: const Icon(Icons.notifications, color: AppTheme.titleColor),
               onPressed: () {
                 // Navigate to notifications screen or perform an action
                 context.go('/notifications');
@@ -53,13 +52,12 @@ class TopNavigationBar extends StatelessWidget implements PreferredSizeWidget {
               ),
           ],
         ),
-        // User Image
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: CircleAvatar(
             radius: 20,
             backgroundImage: NetworkImage(userImageUrl),
-            backgroundColor: Colors.grey[300], // Fallback background color
+            backgroundColor: Colors.grey[300],
           ),
         ),
       ],

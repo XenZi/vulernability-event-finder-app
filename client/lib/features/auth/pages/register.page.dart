@@ -1,57 +1,44 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:client/core/network/api_client.dart';
-import 'package:client/core/security/secure_storage.dart';
-import 'package:client/features/auth/providers/user_provider.dart';
-import 'package:client/shared/components/button_component.dart';
-import 'package:client/shared/components/textfield_component.dart';
-import 'package:client/shared/components/toast_component.dart';
+import 'package:client/shared/components/buttons/button_component.dart';
+import 'package:client/shared/components/inputs/textfield_component.dart';
+import 'package:client/shared/components/toast/toast_component.dart';
 import 'package:client/shared/utils/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:client/core/theme/app_theme.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class LoginPage extends ConsumerStatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends ConsumerState<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final apiClient = ApiClient();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  void _login(String email, String password) async {
-    if (!mounted) return; // Ensure the widget is still mounted at the start.
-
+  void _register(String email, String password) async {
     try {
-      final response = await apiClient.post(
-        '/login',
+      await apiClient.post(
+        '/register',
         {
           'email': email,
           'password': password,
         },
         null,
       );
-      final responseData = json.decode(response.body);
-
-      await SecureStorage.saveToken(responseData['token']);
-      ref.read(userProvider.notifier).updateEmail(email);
-
-      if (mounted) {
-        // Check if the widget is still mounted before using context.
-        context.go('/home');
-      }
+      context.go('/login');
     } on HttpException catch (e) {
-      if (mounted) {
-        // Check again before using context.
-        ErrorToast.show(context, e.message, backgroundColor: Colors.red);
-      }
+      ToastBar.show(
+        context,
+        e.message,
+        style: ToastBarStyle.error,
+      );
     }
   }
 
@@ -75,7 +62,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                "Login",
+                "Register",
                 style: AppTheme.titleStyle.copyWith(fontSize: 32),
                 textAlign: TextAlign.center,
               ),
@@ -95,30 +82,29 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               ),
               const SizedBox(height: 24),
               CustomButton(
-                label: "Login",
+                label: "Register",
                 onPressed: () {
                   if (!formKey.currentState!.validate()) {
-                    print("Validation failed");
                     return;
                   }
-                  _login(emailController.text, passwordController.text);
+                  _register(emailController.text, passwordController.text);
                 },
                 styleType: ButtonStyleType.solid,
               ),
               const SizedBox(height: 16),
               TextButton(
                 onPressed: () {
-                  context.go('/register');
+                  context.go('/login');
                 },
                 child: RichText(
                   text: TextSpan(
-                    text: "Don't have an account? ",
+                    text: "Already have an account? ",
                     style: AppTheme.bodyTextStyle.copyWith(
                       color: AppTheme.textColor,
                     ),
                     children: [
                       TextSpan(
-                        text: "Register",
+                        text: "Login",
                         style: AppTheme.bodyTextStyle.copyWith(
                           color: AppTheme.titleColor,
                         ),

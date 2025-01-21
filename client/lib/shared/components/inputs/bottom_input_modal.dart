@@ -1,6 +1,6 @@
 import 'package:client/core/theme/app_theme.dart';
-import 'package:client/shared/components/button_component.dart';
-import 'package:client/shared/components/textfield_component.dart';
+import 'package:client/shared/components/buttons/button_component.dart';
+import 'package:client/shared/components/inputs/textfield_component.dart';
 import 'package:flutter/material.dart';
 
 class BottomInputModal extends StatefulWidget {
@@ -64,7 +64,7 @@ class BottomInputModalState extends State<BottomInputModal> {
         children: [
           Text(
             widget.title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: AppTheme.titleColor,
@@ -82,7 +82,7 @@ class BottomInputModalState extends State<BottomInputModal> {
               padding: const EdgeInsets.only(top: 8.0),
               child: Text(
                 validationError!,
-                style: TextStyle(color: Colors.red, fontSize: 14),
+                style: const TextStyle(color: Colors.red, fontSize: 14),
               ),
             ),
           const SizedBox(height: 20),
