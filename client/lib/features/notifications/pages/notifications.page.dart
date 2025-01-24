@@ -1,6 +1,6 @@
 import 'package:client/core/theme/app_theme.dart';
-import 'package:client/shared/components/navbars/navigation_component.dart';
-import 'package:client/shared/components/navbars/top_navigation_bar.dart';
+import 'package:client/shared/components/navbars/bottom-navigation.widget.dart';
+import 'package:client/shared/components/navbars/top-navigation-bar.widget.dart';
 import 'package:flutter/material.dart';
 
 class NotificationListPage extends StatelessWidget {

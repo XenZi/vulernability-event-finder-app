@@ -17,7 +17,7 @@ class InfoBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 5.0, left: 16.0, right: 16.0),
-      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
+      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 2.0),
       decoration: BoxDecoration(
         color: AppTheme.darkerBackgroundColor,
         borderRadius: BorderRadius.circular(16.0),

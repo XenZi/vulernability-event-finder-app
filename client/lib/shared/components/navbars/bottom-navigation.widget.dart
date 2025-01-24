@@ -8,7 +8,7 @@ class NavigationComponent extends StatelessWidget {
   static const List<_NavItem> _navItems = [
     _NavItem(icon: Icons.home, label: 'Home', route: '/'),
     _NavItem(icon: Icons.devices, label: 'Assets', route: '/assets'),
-    _NavItem(icon: Icons.settings, label: 'Settings', route: '/settings'),
+    _NavItem(icon: Icons.exit_to_app, label: 'Logout', route: '/logout'),
   ];
 
   @override

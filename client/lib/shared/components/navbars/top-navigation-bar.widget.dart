@@ -52,14 +52,6 @@ class TopNavigationBar extends StatelessWidget implements PreferredSizeWidget {
               ),
           ],
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: CircleAvatar(
-            radius: 20,
-            backgroundImage: NetworkImage(userImageUrl),
-            backgroundColor: Colors.grey[300],
-          ),
-        ),
       ],
     );
   }

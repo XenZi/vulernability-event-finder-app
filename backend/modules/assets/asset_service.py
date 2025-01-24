@@ -24,6 +24,8 @@ async def create_asset(session: Session, user: UserDTO, asset: AssetRegister) ->
     try:
         result = await asset_repository.create_asset(session, asset_db)
         result_from_api = await send_get_request_to_api([result.ip])
+        if result_from_api['data']['data'] == []:
+            return result
         created_event = await event_service.create_event(session, result_from_api["data"]["data"], result.id)
         print(created_event)
     except DuplicateEntity as e:
