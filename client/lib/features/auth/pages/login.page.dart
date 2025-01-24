@@ -3,13 +3,13 @@ import 'dart:io';
 
 import 'package:client/core/network/api_client.dart';
 import 'package:client/core/security/secure_storage.dart';
+import 'package:client/core/theme/app_theme.dart';
 import 'package:client/features/auth/providers/user.provider.dart';
 import 'package:client/shared/components/buttons/button_component.dart';
 import 'package:client/shared/components/inputs/textfield_component.dart';
 import 'package:client/shared/components/toast/toast_component.dart';
 import 'package:client/shared/utils/validators.dart';
 import 'package:flutter/material.dart';
-import 'package:client/core/theme/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -42,10 +42,11 @@ class LoginPageState extends ConsumerState<LoginPage> {
 
       await SecureStorage.saveToken(responseData['token']);
       ref.read(userProvider.notifier).updateEmail(email);
+      print(email);
 
       if (mounted) {
         // Check if the widget is still mounted before using context.
-        context.go('/home');
+        context.go('/');
       }
     } on HttpException catch (e) {
       if (mounted) {

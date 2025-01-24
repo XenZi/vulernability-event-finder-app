@@ -86,3 +86,6 @@ async def get_users(session: Session, page: int, page_size: int) -> List[UserDTO
     if not users:
         return []
     return mapper.userList_to_DTOList(users)
+
+async def update_fcm(session: Session, token: str, user_email: str):
+    await user_repository.update_fcm(session, token, user_email)

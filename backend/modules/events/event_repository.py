@@ -94,5 +94,37 @@ async def write_statement(session: Session, statement: str) -> bool:
         session.rollback()
         raise HTTPException(500, f"Unexpected error: {str(e)}")
    
+async def get_sorted_events_for_asset(session: Session, asset_id: int, sort_by: str, order: str) -> list[Event]:
+    try:
+        select_query = text("""SELECT * FROM Event e WHERE e.asset_id=:asset_id ORDER BY :sort_by :order""")
+        result = session.execute(select_query, {"asset_id": asset_id, "sort_by": sort_by, "order": order}).fetchall()
 
+        if not result:
+            return []
+        
+        assets = [Event(**row._mapping) for row in result]
+        return assets
+    except SQLAlchemyError as e:
+        raise DatabaseFailedOperation(500, f"Database error: {str(e)}")
+    except Exception as e:
+        raise DatabaseFailedOperation(500, f"Unexpected error: {str(e)}")
+    
+async def get_sorted_filtered_events_for_asset(session: Session, asset_id: int, sort_by: str, order: str, filter_by: str, filter_value) -> list[Event]:
+    try:
+        select_query = text("""SELECT * FROM Event e WHERE e.asset_id=:asset_id AND :filter_by=:filter_value ORDER BY :sort_by :order""")
+        result = session.execute(select_query, {"asset_id": asset_id, "filter_by":filter_by, "filter_value":filter_value, "sort_by": sort_by, "order": order}).fetchall()
+
+        if not result:
+            return []
+        
+        assets = [Event(**row._mapping) for row in result]
+        return assets
+    except SQLAlchemyError as e:
+        raise DatabaseFailedOperation(500, f"Database error: {str(e)}")
+    except Exception as e:
+        raise DatabaseFailedOperation(500, f"Unexpected error: {str(e)}")
+    
+
+
+    
 

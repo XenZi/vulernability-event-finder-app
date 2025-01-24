@@ -156,4 +156,22 @@ async def get_all_users(session: Session, page: int = 1, page_size: int = 10) ->
         raise DatabaseFailedOperation(500, f"Database error: {str(e)}")
     except Exception as e:
         raise DatabaseFailedOperation(500, f"Unexpected error: {str(e)}")
+    
+async def update_fcm(session: Session, token: str, user_email: str):
+    try:
+        update_query = text("""
+            UPDATE User
+            SET fcm_token = :fcm_token
+            WHERE email = :user_email;
+        """)
+        result = session.execute(update_query, {
+            "fcm_token": token,
+            "user_email": user_email
+        })
+        session.commit()
 
+    except SQLAlchemyError as e:
+        raise DatabaseFailedOperation(500, f"Database error: {str(e)}")
+    except Exception as e:
+        raise DatabaseFailedOperation(500, f"Unexpected error: {str(e)}")
+    

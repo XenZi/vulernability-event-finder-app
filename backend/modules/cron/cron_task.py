@@ -1,20 +1,17 @@
 import asyncio
 from datetime import datetime, timedelta
 import math
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 from apscheduler.triggers.date import DateTrigger
 from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.triggers.interval import IntervalTrigger
 import httpx
 from config.config import settings
 from modules.assets import asset_service
-from modules.cron import managed_queue
 from modules.events.event_repository import write_statement
+from modules.notifications.notification_service import create_notifications
 from shared.api_utils import send_get_request_to_api
 from shared.dependencies import  get_db
 from config.logger_config import logger
-from modules.cron.managed_queue import ManagedQueue
-from shared.enums import PriorityLevel
 from shared.database_operations_utils import format_SQL_statement;
 
 
@@ -135,6 +132,9 @@ async def event_gather_task():
         await consumers_queue.put(None) 
 
     await consumers_queue.join()
+    sessionDB = next(get_db())
+
+    await create_notifications(sessionDB)
 
     print("All tasks are done finally")
 

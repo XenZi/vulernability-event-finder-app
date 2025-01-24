@@ -1,12 +1,13 @@
+import 'dart:convert';
+
 import 'package:client/core/network/api_client.dart';
 import 'package:client/core/theme/app_theme.dart';
 import 'package:client/features/assets/widgets/asset-cart.widget.dart';
 import 'package:client/shared/components/inputs/bottom_input_modal.dart';
-import 'package:client/shared/models/assets.model.dart';
 import 'package:client/shared/components/scaffolds/global_scaffold.dart';
+import 'package:client/shared/models/assets.model.dart';
 import 'package:client/shared/utils/validators.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
 
 class AssetListPage extends StatefulWidget {
   const AssetListPage({super.key});
@@ -30,7 +31,7 @@ class AssetListPageState extends State<AssetListPage> {
   Future<void> fetchAssets() async {
     try {
       final response = await apiClient.get('/assets/user_assets/',
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqb2huLmRvZUBleGFtcGxlLmNvbSIsImV4cCI6MjI3MzY2NzMzMTl9.EinBgCnUl9s7ZRrTsRojr7CCbe1eJZJDdfGTacHEtbs");
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqb2huLmRvZUBleGFtcGxlLmNvbSIsImV4cCI6MjI3MzY2NzMzMTl9.EinBgCnUl9s7ZRrTsRojr7CCbe1eJZJDdfGTacHEtbs");
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         setState(() {

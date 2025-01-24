@@ -13,10 +13,12 @@ class User(BaseModel):
     password: str
     is_active: bool
     creation_date: datetime
+    fcm_token: str
 
 class UserDTO(BaseModel):
     id: int
     email: str
     is_active: bool
     creation_date: datetime
+    
 

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:http/http.dart' as http;
 
 class ApiClient {
@@ -11,7 +12,7 @@ class ApiClient {
     return _instance;
   }
 
-  final String _baseUrl = 'http://172.20.10.5:8000';
+  final String _baseUrl = 'http://192.168.20.193:8000';
 
   Future<http.Response> get(String endpoint, String? token) async {
     final url = Uri.parse('$_baseUrl$endpoint');

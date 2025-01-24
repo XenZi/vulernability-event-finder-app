@@ -15,6 +15,11 @@ class Event(BaseModel):
     last_occurrence: datetime
     asset_id: int
 
+class EventUpdateDTO(BaseModel):
+    id: int
+    status: EventStatus
+    asset_id: int
+
 
 class ReceivedEvent(BaseModel):
     timestamp: str

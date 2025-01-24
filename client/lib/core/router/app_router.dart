@@ -2,6 +2,7 @@ import 'package:client/features/assets/pages/assets.page.dart';
 import 'package:client/features/assets/pages/home.page.dart';
 import 'package:client/features/auth/pages/login.page.dart';
 import 'package:client/features/auth/pages/register.page.dart';
+import 'package:client/features/events/pages/event.page.dart';
 import 'package:client/features/events/pages/events.page.dart';
 import 'package:client/features/notifications/pages/notifications.page.dart';
 import 'package:go_router/go_router.dart';
@@ -26,7 +27,13 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: '/events/:id',
-      builder: (context, state) => EventsPage(
+      builder: (context, state) => EventListPage(
+        goRouterState: state,
+      ),
+    ),
+    GoRoute(
+      path: '/event/:id',
+      builder: (context, state) => EventPage(
         goRouterState: state,
       ),
     ),

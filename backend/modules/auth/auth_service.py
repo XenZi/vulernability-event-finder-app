@@ -1,4 +1,3 @@
-from sqlalchemy import true
 from shared.response_schemas import SuccessfulTokenPayload
 from modules.auth import jwt_service
 from modules.auth.schemas import UserLogin
@@ -12,7 +11,6 @@ from modules.user.user_mapper import user_to_DTO
 from modules.user import user_service
 from shared.token import serializer, SALT
 from modules.mail.mail_service import send_activation_token
-from config.logger_config import logger
 
 async def register_user(session: Session, user: UserRegister) -> UserDTO:
     """
@@ -76,6 +74,7 @@ async def login(session: Session, login_data: UserLogin) -> SuccessfulTokenPaylo
     if not valid_credentials:
         raise AuthenticationFailedException(401, "Authentication failed. Invalid username or password")
     token = jwt_service.generate_jwt({"id":user.id, "email": user.email})
+    await user_service.update_fcm(session, login_data.fcm_token, login_data.email)
     return SuccessfulTokenPayload(token=token)
 
 async def activate_account(session: Session, token: str) -> UserDTO:

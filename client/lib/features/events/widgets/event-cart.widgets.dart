@@ -3,49 +3,53 @@ import 'package:client/core/theme/app_theme.dart';
 import 'package:client/shared/components/icons/circle_icon.dart';
 import 'package:client/shared/components/selections/bottom_selection_menu.dart';
 import 'package:client/shared/components/toast/toast_component.dart';
-import 'package:client/shared/models/assets.model.dart';
+import 'package:client/shared/models/event-status.enum.dart';
+import 'package:client/shared/models/event.model.dart';
 import 'package:client/shared/models/menu-option.model.dart';
-import 'package:client/shared/models/priority.enum.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class AssetCard extends StatelessWidget {
-  final Asset asset;
+class EventCard extends StatelessWidget {
+  final Event event;
   final ApiClient apiClient;
 
-  const AssetCard({
+  const EventCard({
     super.key,
-    required this.asset,
+    required this.event,
     required this.apiClient,
   });
 
-  List<MenuOption> _getMenuItems(BuildContext context) => PriorityLevel.values
+  List<MenuOption> _getMenuItems(BuildContext context) => EventStatus.values
       .map(
-        (priority) => MenuOption(
-          text: priority.label,
-          icon: Icons.priority_high,
-          iconColor: priority.color,
-          onTap: () => _changePriorityOfAnAsset(context, priority),
+        (eventStatus) => MenuOption(
+          text: eventStatus.label,
+          icon: Icons.privacy_tip,
+          iconColor: eventStatus.color,
+          onTap: () => _changeEventStatus(context, eventStatus),
         ),
       )
       .toList();
 
-  Future<void> _changePriorityOfAnAsset(
-      BuildContext context, PriorityLevel priority) async {
+// id: int
+//     status: EventStatus
+//     asset_id: int
+
+
+  Future<void> _changeEventStatus(
+      BuildContext context, EventStatus eventStatus) async {
     try {
       await apiClient.put(
-          "/assets/update",
+          "/events/update",
           {
-            "id": asset.id,
-            "ip": asset.ip,
-            "notification_priority_level": priority.index,
-            "user_id": asset.userId,
+            "id": event.id,
+            "status": eventStatus.index,
+            "asset_id": event.assetId,
           },
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqb2huLmRvZUBleGFtcGxlLmNvbSIsImV4cCI6MjI3Mzc2NDk4Njh9.syHu6AlmV1zGvWCh847AvBLXEITTXt_pOxnksNie8A0");
       if (context.mounted) {
         ToastBar.show(
           context,
-          "Priority updated successfully.",
+          "Status updated successfully.",
           style: ToastBarStyle.success,
         );
       }
@@ -60,49 +64,18 @@ class AssetCard extends StatelessWidget {
     }
   }
 
-  void _showPrioritySelection(BuildContext context) {
+  void _showEventStatusSelection(BuildContext context) {
     DynamicSelectionMenu.show(
       context: context,
       options: _getMenuItems(context),
     );
   }
 
-  void _confirmDeletion(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.backgroundColor,
-        title: const Text(
-          'Confirm Deletion',
-          textAlign: TextAlign.center,
-          style: TextStyle(color: AppTheme.textColor),
-        ),
-        content: const Text(
-          'Are you sure you want to delete this asset?',
-          style: TextStyle(color: AppTheme.textColor),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child:
-                const Text('Delete', style: TextStyle(color: Colors.redAccent)),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel',
-                style: TextStyle(color: AppTheme.textColor)),
-          ),
-        ],
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () => {context.go("/events/${asset.id}")},
+        onTap: () => {context.go("/event/${event.id}")},
         child: Card(
           color: AppTheme.backgroundColor.withOpacity(0.9),
           margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
@@ -120,27 +93,27 @@ class AssetCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(asset.ip,
+                      Text(event.uuid,
                           style: const TextStyle(color: AppTheme.textColor)),
                       const SizedBox(height: 4),
                       Text(
-                        'Created: ${asset.creationDate.toLocal().toString().split(" ")[0]}',
+                        'Created: ${event.creationDate.toLocal().toString().split(" ")[0]}',
                         style: const TextStyle(color: AppTheme.textColor),
                       ),
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Text('Priority: ',
+                          const Text('Status: ',
                               style: TextStyle(color: AppTheme.textColor)),
                           Text(
-                            asset.notificationPriorityLevel,
+                            event.status,
                             style: TextStyle(
-                              color: PriorityLevel.values
+                              color: EventStatus.values
                                   .firstWhere(
                                     (p) =>
                                         p.label ==
-                                        asset.notificationPriorityLevel,
-                                    orElse: () => PriorityLevel.none,
+                                        event.status,
+                                    orElse: () => EventStatus.discovered,
                                   )
                                   .color,
                             ),
@@ -157,13 +130,7 @@ class AssetCard extends StatelessWidget {
                       icon: Icons.edit,
                       color: Colors.orange,
                       size: 20,
-                      onPressed: () => _showPrioritySelection(context),
-                    ),
-                    CircleIconButton(
-                      icon: Icons.delete,
-                      color: Colors.red,
-                      size: 20,
-                      onPressed: () => _confirmDeletion(context),
+                      onPressed: () => _showEventStatusSelection(context),
                     ),
                   ],
                 ),

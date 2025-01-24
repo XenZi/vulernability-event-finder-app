@@ -1,10 +1,9 @@
-import 'package:client/shared/models/event-status.enum.dart';
 import 'package:client/shared/models/priority.enum.dart';
 
 class Event {
   final int id;
   final String uuid;
-  final EventStatus status;
+  final String status;
   final String host;
   final String port;
   final PriorityLevel priority;
@@ -27,10 +26,16 @@ class Event {
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
+    Map<int, String> eventStatuses = {
+      0: 'Discovered',
+      1: 'Acknowledged',
+      2: 'Removed',
+      3: 'False Positive',
+    };
     return Event(
       id: json['id'],
       uuid: json['uuid'],
-      status: EventStatus.values[json['status']],
+      status: eventStatuses[json['status']]!,
       host: json['host'],
       port: json['port'],
       priority: PriorityLevel.values[json['priority']],
@@ -39,21 +44,6 @@ class Event {
       lastOccurrence: DateTime.parse(json['last_occurrence']),
       assetId: json['asset_id'],
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'uuid': uuid,
-      'status': status.index,
-      'host': host,
-      'port': port,
-      'priority': priority.index,
-      'category_name': categoryName,
-      'creation_date': creationDate.toIso8601String(),
-      'last_occurrence': lastOccurrence.toIso8601String(),
-      'asset_id': assetId,
-    };
   }
 }
 

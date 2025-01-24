@@ -12,3 +12,4 @@ class TokenData(BaseModel):
 class UserLogin(BaseModel):
     email: str
     password: str
+    fcm_token: str

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Query, status
-from modules.assets.asset_schemas import AssetDTO, AssetRegister, Asset
+from modules.assets.asset_schemas import AssetDTO, AssetRegister
 from shared.dependencies import SessionDep, CurrentUser
 from modules.assets import asset_service
 
