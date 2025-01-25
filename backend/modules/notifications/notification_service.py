@@ -60,12 +60,21 @@ async def send_user_notifications(token_list):
             print(chunk)
             await asyncio.sleep(1)
             message = messaging.MulticastMessage(
-            notification=messaging.Notification(
-                title="Discovered Events",
-                body="Your assets have non-acknoledged events xD",
+                notification=messaging.Notification(
+                    title="Discovered Events",
+                    body="Your assets have non-acknowledged events xD",
                 ),
-            tokens=chunk
+                android=messaging.AndroidConfig(
+                    priority="high",  # High priority for Android
+                ),
+                apns=messaging.APNSConfig(
+                    headers={
+                        "apns-priority": "10",  # High priority for iOS
+                    }
+                ),
+                tokens=chunk
             )
+
             
             response = messaging.send_each_for_multicast(message)
             success_count = response.success_count

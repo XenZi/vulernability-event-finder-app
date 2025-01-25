@@ -12,7 +12,7 @@ class ApiClient {
     return _instance;
   }
 
-  final String _baseUrl = 'http://192.168.1.28:8000';
+  final String _baseUrl = 'http://192.168.0.31:8000';
 
   Future<http.Response> get(String endpoint, String? token) async {
     final url = Uri.parse('$_baseUrl$endpoint');

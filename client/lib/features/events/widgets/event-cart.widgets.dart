@@ -1,8 +1,8 @@
-import 'package:client/core/network/api_client.dart';
-import 'package:client/core/theme/app_theme.dart';
-import 'package:client/shared/components/icons/circle_icon.dart';
-import 'package:client/shared/components/selections/bottom_selection_menu.dart';
-import 'package:client/shared/components/toast/toast_component.dart';
+import 'package:client/core/network/api.client.dart';
+import 'package:client/core/theme/app.theme.dart';
+import 'package:client/shared/components/icons/circle-icon.widget.dart';
+import 'package:client/shared/components/selections/bottom-selection-menu.widget.dart';
+import 'package:client/shared/components/toast/toast.widget.dart';
 import 'package:client/shared/models/event-status.enum.dart';
 import 'package:client/shared/models/event.model.dart';
 import 'package:client/shared/models/menu-option.model.dart';
@@ -33,7 +33,6 @@ class EventCard extends StatelessWidget {
 // id: int
 //     status: EventStatus
 //     asset_id: int
-
 
   Future<void> _changeEventStatus(
       BuildContext context, EventStatus eventStatus) async {
@@ -70,7 +69,6 @@ class EventCard extends StatelessWidget {
       options: _getMenuItems(context),
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -110,9 +108,7 @@ class EventCard extends StatelessWidget {
                             style: TextStyle(
                               color: EventStatus.values
                                   .firstWhere(
-                                    (p) =>
-                                        p.label ==
-                                        event.status,
+                                    (p) => p.label == event.status,
                                     orElse: () => EventStatus.discovered,
                                   )
                                   .color,
