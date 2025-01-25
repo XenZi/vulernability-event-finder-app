@@ -34,7 +34,6 @@ class EventCard extends StatelessWidget {
 //     status: EventStatus
 //     asset_id: int
 
-
   Future<void> _changeEventStatus(
       BuildContext context, EventStatus eventStatus) async {
     try {
@@ -70,7 +69,6 @@ class EventCard extends StatelessWidget {
       options: _getMenuItems(context),
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -110,9 +108,7 @@ class EventCard extends StatelessWidget {
                             style: TextStyle(
                               color: EventStatus.values
                                   .firstWhere(
-                                    (p) =>
-                                        p.label ==
-                                        event.status,
+                                    (p) => p.label == event.status,
                                     orElse: () => EventStatus.discovered,
                                   )
                                   .color,

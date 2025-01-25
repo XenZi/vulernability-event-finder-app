@@ -8,10 +8,9 @@ import 'package:client/features/events/pages/events.page.dart';
 import 'package:client/features/notifications/pages/notifications.page.dart';
 import 'package:go_router/go_router.dart';
 
-Future<bool> hasToken() async {
-  SecureStorage.clearToken();
-  final tokenExists = await SecureStorage.loadToken();
-  return tokenExists == null ? false : true;
+Future<bool> isLoggedIn() async {
+  final token = await SecureStorage.loadToken();
+  return token != null;
 }
 
 final GoRouter appRouter = GoRouter(
@@ -19,6 +18,12 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/login',
       builder: (context, state) => LoginPage(),
+      redirect: (context, state) async {
+        if (await isLoggedIn()) {
+          return '/';
+        }
+        return null;
+      },
     ),
     GoRoute(
       path: '/register',
@@ -54,7 +59,7 @@ final GoRouter appRouter = GoRouter(
         SecureStorage.clearToken();
         return LoginPage();
       },
-    )
+    ),
   ],
   initialLocation: '/login',
 );

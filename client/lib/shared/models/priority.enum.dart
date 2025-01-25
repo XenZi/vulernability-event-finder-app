@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 enum PriorityLevel {
-  high,
-  medium,
+  none,
   low,
-  none;
+  medium,
+  high;
 
   String get label => {
         PriorityLevel.high: 'High',

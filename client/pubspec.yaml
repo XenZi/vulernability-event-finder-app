@@ -42,8 +42,7 @@ dependencies:
   flutter_carousel_widget:
   firebase_core: ^3.10.1
   firebase_messaging: ^15.2.1
-  url_launcher: ^6.0.10
-
+  flutter_local_notifications:
 dev_dependencies:
   flutter_test:
     sdk: flutter
