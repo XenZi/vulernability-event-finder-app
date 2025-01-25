@@ -1,22 +1,22 @@
 import 'dart:convert';
 
-import 'package:client/core/network/api_client.dart';
+import 'package:client/core/network/api.client.dart';
+import 'package:client/core/theme/app.theme.dart';
 import 'package:client/features/events/widgets/event-cart.widgets.dart';
-import 'package:client/shared/components/scaffolds/global_scaffold.dart';
+import 'package:client/shared/components/navbars/bottom-navigation.widget.dart';
+import 'package:client/shared/components/navbars/top-navigation-bar.widget.dart';
+import 'package:client/shared/components/scaffolds/global-scaffold.widget.dart';
 import 'package:client/shared/models/event.model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
 
 class EventListPage extends StatefulWidget {
   const EventListPage({super.key, this.goRouterState});
   final GoRouterState? goRouterState;
 
-
   @override
   EventListPageState createState() => EventListPageState();
 }
-
 
 class EventListPageState extends State<EventListPage> {
   final ApiClient apiClient = ApiClient();
@@ -29,8 +29,9 @@ class EventListPageState extends State<EventListPage> {
     super.initState();
     fetchEvents();
   }
+
   Future<void> fetchEvents() async {
-     final assetId = widget.goRouterState?.pathParameters['id'];
+    final assetId = widget.goRouterState?.pathParameters['id'];
 
     if (assetId == null) {
       setState(() {
@@ -59,7 +60,6 @@ class EventListPageState extends State<EventListPage> {
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {

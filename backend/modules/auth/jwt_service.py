@@ -23,8 +23,7 @@ def generate_jwt(
     Returns:
         str: The generated JWT as a string.
     """
-    # payload["exp"] = datetime.now(timezone.utc) + timedelta(minutes=settings.access_token_expire_minutes)
-    payload["exp"] = datetime.now(timezone.utc) + timedelta(minutes=350000000)
+    payload["exp"] = datetime.now(timezone.utc) + timedelta(days=14)
 
     token = jwt.encode(payload, settings.secret_key, algorithm=settings.password_algorithm)
     

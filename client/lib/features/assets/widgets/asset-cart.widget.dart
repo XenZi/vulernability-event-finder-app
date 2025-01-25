@@ -1,23 +1,23 @@
-import 'package:client/core/network/api_client.dart';
-import 'package:client/core/theme/app_theme.dart';
-import 'package:client/shared/components/icons/circle_icon.dart';
-import 'package:client/shared/components/selections/bottom_selection_menu.dart';
-import 'package:client/shared/components/toast/toast_component.dart';
-import 'package:client/shared/models/assets.model.dart';
+import 'package:client/core/network/api.client.dart';
+import 'package:client/shared/components/selections/bottom-selection-menu.widget.dart';
+import 'package:client/shared/components/toast/toast.widget.dart';
 import 'package:client/shared/models/menu-option.model.dart';
 import 'package:client/shared/models/priority.enum.dart';
 import 'package:flutter/material.dart';
+import 'package:client/core/theme/app.theme.dart';
+import 'package:client/shared/components/icons/circle-icon.widget.dart';
+import 'package:client/shared/models/assets.model.dart';
 import 'package:go_router/go_router.dart';
 
 class AssetCard extends StatelessWidget {
   final Asset asset;
   final ApiClient apiClient;
-
-  const AssetCard({
-    super.key,
-    required this.asset,
-    required this.apiClient,
-  });
+  final VoidCallback onDelete;
+  const AssetCard(
+      {super.key,
+      required this.asset,
+      required this.apiClient,
+      required this.onDelete});
 
   List<MenuOption> _getMenuItems(BuildContext context) => PriorityLevel.values
       .map(
@@ -84,6 +84,7 @@ class AssetCard extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () {
+              onDelete();
               Navigator.of(context).pop();
             },
             child:
