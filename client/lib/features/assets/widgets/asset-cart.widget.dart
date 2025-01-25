@@ -1,4 +1,4 @@
-import 'package:client/core/network/api_client.dart';
+import 'package:client/core/network/api.client.dart';
 import 'package:client/shared/components/selections/bottom-selection-menu.widget.dart';
 import 'package:client/shared/components/toast/toast.widget.dart';
 import 'package:client/shared/models/menu-option.model.dart';

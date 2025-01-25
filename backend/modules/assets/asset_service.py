@@ -1,4 +1,5 @@
-from typing import Dict, List
+from http.client import HTTPException
+from typing import Dict, List, Optional
 from modules.assets import asset_mapper
 from modules.assets.asset_schemas import Asset, AssetDTO, AssetRegister
 from sqlalchemy.orm import Session
@@ -42,11 +43,41 @@ async def get_asset_by_id_as_dto(session: Session, asset_id:int, user_id: int) -
         raise AuthenticationFailedException(401, 'Unathorized')
     return asset
 
-async def get_all_assets_for_user(session: Session, user_id: int, page: int, page_size: int) -> List[AssetDTO]:
-    assets = await asset_repository.get_all_assets_for_user(session=session, user_id=user_id, page=page, page_size=page_size)
-    if not assets:
-        return []
-    return assets
+async def get_all_assets_for_user(
+    session: Session,
+    user_id: int,
+    page: int = 1,
+    page_size: int = 10,
+    order_by: Optional[str] = None,
+    order_by_criteria: Optional[str] = None,
+) -> list[AssetDTO]:
+    valid_columns = {"creation_date", "notification_priority_level"}
+    valid_directions = {"ASC", "DESC"}
+
+    order_by = order_by or "creation_date"
+    order_by_criteria = order_by_criteria or "DESC"
+
+    if order_by not in valid_columns:
+        raise HTTPException(
+            400,
+            f"Invalid 'order_by' field. Valid options are: {', '.join(valid_columns)}."
+        )
+
+    if order_by_criteria not in valid_directions:
+        raise HTTPException(
+            400,
+            f"Invalid 'order_by_criteria'. Valid options are: {', '.join(valid_directions)}."
+        )
+    assets = await asset_repository.get_all_assets_for_user(
+        session=session,
+        user_id=user_id,
+        page=page,
+        page_size=page_size,
+        order_by=order_by,
+        order_by_criteria=order_by_criteria,
+    )
+
+    return assets or []
 
 async def update_asset_notification_priority_level(session: Session, assetDTO: AssetDTO, user: UserDTO) -> AssetDTO:
     if assetDTO.user_id != user.id:

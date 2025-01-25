@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:client/core/network/api_client.dart';
-import 'package:client/core/security/secure_storage.dart';
+import 'package:client/core/network/api.client.dart';
+import 'package:client/core/security/secure-storage.component.dart';
 import 'package:client/features/auth/providers/user.provider.dart';
 import 'package:client/shared/components/buttons/button.widget.dart';
 import 'package:client/shared/components/inputs/textfield_component.dart';

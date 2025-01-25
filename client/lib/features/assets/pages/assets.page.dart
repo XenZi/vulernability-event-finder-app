@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:client/core/network/api_client.dart';
-import 'package:client/core/security/secure_storage.dart';
+import 'package:client/core/network/api.client.dart';
+import 'package:client/core/security/secure-storage.component.dart';
 import 'package:client/core/theme/app_theme.dart';
 import 'package:client/features/assets/widgets/asset-cart.widget.dart';
 import 'package:client/shared/components/inputs/bottom_input_modal.dart';
@@ -133,38 +133,77 @@ class AssetListPageState extends State<AssetListPage> {
     }
   }
 
+  void _showFilterModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Filter Assets',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                decoration: const InputDecoration(labelText: 'Category'),
+                items: const [
+                  DropdownMenuItem(
+                      value: 'category1', child: Text('Category 1')),
+                  DropdownMenuItem(
+                      value: 'category2', child: Text('Category 2')),
+                ],
+                onChanged: (value) {
+                  // Handle filter logic
+                },
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  // Apply filter logic
+                  Navigator.pop(context);
+                },
+                child: const Text('Apply Filters'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GlobalScaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showInputModal(context),
-        backgroundColor: AppTheme.titleColor,
-        child: const Icon(
-          Icons.add,
-          color: AppTheme.textColor,
-        ),
-      ),
-      child: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : errorMessage != null
-              ? Center(
-                  child: Text(
-                    errorMessage!,
-                    style: TextStyle(fontSize: 18, color: Colors.red),
-                  ),
+      child: Stack(
+        children: [
+          isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(),
                 )
-              : assets.isEmpty
-                  ? const Center(
+              : errorMessage != null
+                  ? Center(
                       child: Text(
-                        'No assets available!',
-                        style: TextStyle(fontSize: 18, color: Colors.grey),
+                        errorMessage!,
+                        style: const TextStyle(fontSize: 18, color: Colors.red),
                       ),
                     )
-                  : Stack(
-                      children: [
-                        ListView.builder(
+                  : assets.isEmpty
+                      ? const Center(
+                          child: Text(
+                            'No assets available!',
+                            style: TextStyle(fontSize: 18, color: Colors.grey),
+                          ),
+                        )
+                      : ListView.builder(
                           controller: _scrollController,
                           itemCount: assets.length + (hasMoreAssets ? 1 : 0),
                           itemBuilder: (context, index) {
@@ -184,8 +223,34 @@ class AssetListPageState extends State<AssetListPage> {
                             );
                           },
                         ),
-                      ],
-                    ),
+          // Floating Buttons
+          Positioned(
+            bottom: 16,
+            right: 16,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                FloatingActionButton(
+                  heroTag: 'filter_button',
+                  onPressed: () => _showFilterModal(context),
+                  backgroundColor: Colors.blue,
+                  child: const Icon(Icons.filter_list),
+                ),
+                const SizedBox(height: 16),
+                FloatingActionButton(
+                  heroTag: 'add_button',
+                  onPressed: () => _showInputModal(context),
+                  backgroundColor: AppTheme.titleColor,
+                  child: const Icon(
+                    Icons.add,
+                    color: AppTheme.textColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:client/core/network/api_client.dart';
+import 'package:client/core/network/api.client.dart';
 import 'package:client/shared/components/buttons/button.widget.dart';
 import 'package:client/shared/components/inputs/textfield_component.dart';
 import 'package:client/shared/components/toast/toast.widget.dart';

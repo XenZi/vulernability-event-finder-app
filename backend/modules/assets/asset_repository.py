@@ -58,18 +58,37 @@ async def get_asset_by_id(session: Session, asset_id: int, user_id: int) -> Asse
     except Exception as e:
         raise HTTPException(500, f"Unexpected error: {str(e)}")
 
-async def get_all_assets_for_user(session: Session, user_id: int, page: int = 1, page_size: int = 10) -> list[AssetDTO]:
+async def get_all_assets_for_user(
+    session: Session,
+    user_id: int,
+    page: int = 1,
+    page_size: int = 10,
+    order_by: str = "creation_date",
+    order_by_criteria: str = "ASC",
+) -> list[AssetDTO]:
     try:
+        # Validate input
         if page < 1 or page_size < 1:
             raise HTTPException(400, "Page and page size must be positive integers.")
-
+        
+        
         offset = (page - 1) * page_size
-        select_query = text("""SELECT * FROM asset WHERE user_id=:id LIMIT :limit OFFSET :offset""")
-        result = session.execute(select_query, {"id":user_id, "limit": page_size, "offset": offset}).fetchall()
 
+        query = f"""
+            SELECT * FROM asset
+            WHERE user_id = :id
+            ORDER BY {order_by} {order_by_criteria}
+            LIMIT :limit OFFSET :offset
+        """
+        select_query = text(query)
+        
+        # Execute the query
+        result = session.execute(select_query, {"id": user_id, "limit": page_size, "offset": offset}).fetchall()
+        
         if not result:
             return []
         
+        # Map the result to AssetDTO
         assets = [AssetDTO(**row._mapping) for row in result]
         return assets
     except SQLAlchemyError as e:

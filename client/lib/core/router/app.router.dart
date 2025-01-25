@@ -1,4 +1,4 @@
-import 'package:client/core/security/secure_storage.dart';
+import 'package:client/core/security/secure-storage.component.dart';
 import 'package:client/features/assets/pages/assets.page.dart';
 import 'package:client/features/assets/pages/home.page.dart';
 import 'package:client/features/auth/pages/login.page.dart';
