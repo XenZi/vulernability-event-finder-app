@@ -1,3 +1,4 @@
+import 'package:client/core/security/secure-storage.component.dart';
 import 'package:client/features/assets/pages/assets.page.dart';
 import 'package:client/features/assets/pages/home.page.dart';
 import 'package:client/features/auth/pages/login.page.dart';
@@ -5,6 +6,12 @@ import 'package:client/features/auth/pages/register.page.dart';
 import 'package:client/features/events/pages/events.page.dart';
 import 'package:client/features/notifications/pages/notifications.page.dart';
 import 'package:go_router/go_router.dart';
+
+Future<bool> hasToken() async {
+  SecureStorage.clearToken();
+  final tokenExists = await SecureStorage.loadToken();
+  return tokenExists == null ? false : true;
+}
 
 final GoRouter appRouter = GoRouter(
   routes: [
@@ -33,7 +40,14 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/assets',
       builder: (context, state) => AssetListPage(),
+    ),
+    GoRoute(
+      path: '/logout',
+      builder: (context, state) {
+        SecureStorage.clearToken();
+        return LoginPage();
+      },
     )
   ],
-  initialLocation: '/', // Default route when the app starts
+  initialLocation: '/login',
 );

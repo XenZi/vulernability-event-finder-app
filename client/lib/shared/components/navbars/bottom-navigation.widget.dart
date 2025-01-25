@@ -1,4 +1,4 @@
-import 'package:client/core/theme/app_theme.dart';
+import 'package:client/core/theme/app.theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -8,7 +8,7 @@ class NavigationComponent extends StatelessWidget {
   static const List<_NavItem> _navItems = [
     _NavItem(icon: Icons.home, label: 'Home', route: '/'),
     _NavItem(icon: Icons.devices, label: 'Assets', route: '/assets'),
-    _NavItem(icon: Icons.settings, label: 'Settings', route: '/settings'),
+    _NavItem(icon: Icons.exit_to_app, label: 'Logout', route: '/logout'),
   ];
 
   @override

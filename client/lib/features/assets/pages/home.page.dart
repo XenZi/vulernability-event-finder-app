@@ -1,12 +1,11 @@
 import 'dart:convert';
 import 'dart:math';
-import 'package:client/core/network/api_client.dart';
-import 'package:client/core/theme/app_theme.dart';
+import 'package:client/core/network/api.client.dart';
+import 'package:client/core/theme/app.theme.dart';
 import 'package:client/shared/components/box/box-with-title.widget.dart';
-import 'package:client/shared/components/box/info-box.widget.dart';
 import 'package:client/shared/components/charts/bar-chart.widget.dart';
 import 'package:client/shared/components/charts/pie-chart.widget.dart';
-import 'package:client/shared/components/scaffolds/global_scaffold.dart';
+import 'package:client/shared/components/scaffolds/global-scaffold.widget.dart';
 import 'package:client/shared/models/event.model.dart';
 import 'package:client/shared/models/ip-asset-with-event-number.model.dart';
 import 'package:client/shared/tables/ip-with-number-of-events.table.dart';
@@ -236,21 +235,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           const SizedBox(height: 16.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              InfoBox(
-                title: "Assets",
-                icon: Icons.pie_chart_outline,
-                text: "You have 12 assets",
-              ),
-              InfoBox(
-                title: "Events",
-                icon: Icons.event_note,
-                text: "You have 5 events",
-              ),
-            ],
-          ),
         ],
       ),
     ));
