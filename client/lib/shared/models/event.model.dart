@@ -25,6 +25,8 @@ class Event {
     required this.assetId,
   });
 
+
+
   factory Event.fromJson(Map<String, dynamic> json) {
     Map<int, String> eventStatuses = {
       0: 'Discovered',
@@ -72,5 +74,32 @@ class MostRecentEvent {
       'priority': priority.index,
       'category_name': categoryName,
     };
+  }
+}
+
+class EventInfo {
+  final String uuid;
+  final String category;
+  final String description;
+
+  
+
+  
+  EventInfo({
+    required this.uuid,
+    required this.category,
+    required this.description,
+
+
+  });
+
+
+
+  factory EventInfo.fromJson(Map<String, dynamic> json) {
+    return EventInfo(
+      uuid: json['uuid'],
+      category: json['category'],
+      description: json['description'],
+    );
   }
 }

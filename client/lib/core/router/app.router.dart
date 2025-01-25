@@ -39,7 +39,7 @@ final GoRouter appRouter = GoRouter(
       ),
     ),
     GoRoute(
-      path: '/event/:id',
+      path: '/event/:assetId/:uuid',
       builder: (context, state) => EventPage(
         goRouterState: state,
       ),

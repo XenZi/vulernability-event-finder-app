@@ -22,4 +22,6 @@ async def get_all_events_by_asset_id(session: SessionDep, asset_id: int, sort_by
     return await event_service.get_sorted_filtered_events(session, asset_id, sort_by, order, filter_by, filter_value)
 
 
-
+@router.get("/uuid/{uuid}", status_code=status.HTTP_200_OK)
+async def get_event_data(uuid: str):
+    return await event_service.get_event_by_uuid(event_UUID=uuid)

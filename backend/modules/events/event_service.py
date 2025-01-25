@@ -4,6 +4,7 @@ from modules.events.events_schemas import Event
 from shared.dependencies import Session
 from shared.exceptions import DatabaseFailedOperation, EntityNotFound
 from shared.database_operations_utils import format_sql_for_single_asset
+from shared.api_utils import send_get_request_for_single
 
 
 async def get_event_by_id(session: Session, event_id: int) -> Event:
@@ -11,6 +12,13 @@ async def get_event_by_id(session: Session, event_id: int) -> Event:
     if event is None:
         raise EntityNotFound(404, 'Entity not found')
     return event
+
+async def get_event_by_uuid(event_UUID: str):
+    data = await send_get_request_for_single(event_UUID)
+    event_data = data['data']['data']
+    return event_data
+    
+
 
 
 async def create_event(session: Session, createdEvent: list, asset_id: int) -> bool:
