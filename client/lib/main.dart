@@ -1,5 +1,5 @@
 import 'package:client/core/router/app.router.dart';
-import 'package:client/core/theme/app_theme.dart';
+import 'package:client/core/theme/app.theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

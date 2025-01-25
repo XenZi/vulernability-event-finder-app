@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:client/core/network/api.client.dart';
 import 'package:client/core/security/secure-storage.component.dart';
-import 'package:client/core/theme/app_theme.dart';
+import 'package:client/core/theme/app.theme.dart';
 import 'package:client/features/assets/widgets/asset-cart.widget.dart';
 import 'package:client/shared/components/inputs/bottom_input_modal.dart';
 import 'package:client/shared/components/toast/toast.widget.dart';
@@ -22,6 +22,10 @@ class AssetListPage extends StatefulWidget {
 class AssetListPageState extends State<AssetListPage> {
   final ApiClient apiClient = ApiClient();
   final ScrollController _scrollController = ScrollController();
+  Map<String, String> searchQueryValues = {
+    "orderBy": "creation_date",
+    "orderByCriteria": "DESC"
+  };
   List<Asset> assets = [];
   bool isLoading = true;
   bool isFetchingMore = false;
@@ -36,20 +40,20 @@ class AssetListPageState extends State<AssetListPage> {
     fetchAssets();
   }
 
-  Future<void> fetchAssets({int page = 1}) async {
+  Future<void> fetchAssets(
+      {int page = 1, String orderBy = "", String orderByCriteria = ""}) async {
     if (isFetchingMore) return;
-
     setState(() {
       if (page == 1) isLoading = true;
       isFetchingMore = true;
     });
-    print("/assets/user_assets/?page=$page");
     try {
       final response = await apiClient.get(
-        '/assets/user_assets/?page=$page',
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqb2huLmRvZUBleGFtcGxlLmNvbSIsImV4cCI6MjI3MzY2NzMzMTl9.EinBgCnUl9s7ZRrTsRojr7CCbe1eJZJDdfGTacHEtbs",
+        '/assets/user_assets/?page=$page&order_by=${searchQueryValues["orderBy"]}&order_by_criteria=${searchQueryValues["orderByCriteria"]}',
+        await SecureStorage.loadToken(),
       );
 
+      print(response.body);
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         setState(() {
@@ -124,6 +128,28 @@ class AssetListPageState extends State<AssetListPage> {
         });
   }
 
+  Future<void> deleteAsset(int assetID, int index) async {
+    try {
+      final response = await apiClient.delete(
+        '/assets/$assetID',
+        await SecureStorage.loadToken(),
+      );
+      print(response.body);
+      setState(() {
+        assets.removeAt(index);
+      });
+    } on HttpException catch (e) {
+      print("Error $e");
+      ToastBar.show(
+        context,
+        e.message,
+        style: ToastBarStyle.error,
+      );
+    } on Exception catch (e) {
+      print(" ERROR $e");
+    }
+  }
+
   void _onScroll() {
     if (_scrollController.position.pixels >=
             _scrollController.position.maxScrollExtent - 100 &&
@@ -154,24 +180,31 @@ class AssetListPageState extends State<AssetListPage> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                decoration: const InputDecoration(labelText: 'Category'),
+                decoration: const InputDecoration(labelText: 'Sort by'),
                 items: const [
                   DropdownMenuItem(
-                      value: 'category1', child: Text('Category 1')),
+                      value: 'creation_date-asc', child: Text('Oldest')),
                   DropdownMenuItem(
-                      value: 'category2', child: Text('Category 2')),
+                      value: 'creation_date-desc', child: Text('Newest')),
+                  DropdownMenuItem(
+                      value: 'notification_priority_level-asc',
+                      child: Text('Lowest priority')),
+                  DropdownMenuItem(
+                      value: 'notification_priority_level-desc',
+                      child: Text('Highest priority')),
                 ],
                 onChanged: (value) {
-                  // Handle filter logic
-                },
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  // Apply filter logic
+                  if (value != null) {
+                    final parts = value.split('-');
+                    final order = parts[1].toUpperCase();
+                    setState(() {
+                      searchQueryValues["orderBy"] = parts[0];
+                      searchQueryValues["orderByCriteria"] = order;
+                    });
+                    fetchAssets();
+                  }
                   Navigator.pop(context);
                 },
-                child: const Text('Apply Filters'),
               ),
             ],
           ),
@@ -220,6 +253,7 @@ class AssetListPageState extends State<AssetListPage> {
                               key: ValueKey(asset.id),
                               asset: asset,
                               apiClient: apiClient,
+                              onDelete: () => {deleteAsset(asset.id, index)},
                             );
                           },
                         ),

@@ -18,6 +18,7 @@ async def count_all_assets(session: SessionDep) -> int:
 async def get_asset_by_id(session: SessionDep, current_user: CurrentUser, asset_id: int) -> AssetDTO:
     asset_dto = await asset_service.get_asset_by_id_as_dto(session=session, asset_id=asset_id, user_id=current_user.id)
     return asset_dto
+
 @router.delete("/{asset_id}", status_code=status.HTTP_200_OK)
 async def delete_asset_by_id(session: SessionDep, current_user: CurrentUser, asset_id: int) -> AssetDTO:
     return await asset_service.delete_asset(session=session, asset_id=asset_id, user_id=current_user.id)

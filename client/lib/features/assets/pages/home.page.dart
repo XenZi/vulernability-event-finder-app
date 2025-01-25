@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:client/core/network/api.client.dart';
-import 'package:client/core/theme/app_theme.dart';
+import 'package:client/core/theme/app.theme.dart';
 import 'package:client/shared/components/box/box-with-title.widget.dart';
 import 'package:client/shared/components/charts/bar-chart.widget.dart';
 import 'package:client/shared/components/charts/pie-chart.widget.dart';

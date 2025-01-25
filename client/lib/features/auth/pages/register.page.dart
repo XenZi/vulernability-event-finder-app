@@ -6,7 +6,7 @@ import 'package:client/shared/components/inputs/textfield_component.dart';
 import 'package:client/shared/components/toast/toast.widget.dart';
 import 'package:client/shared/utils/validators.dart';
 import 'package:flutter/material.dart';
-import 'package:client/core/theme/app_theme.dart';
+import 'package:client/core/theme/app.theme.dart';
 import 'package:go_router/go_router.dart';
 
 class RegisterPage extends StatefulWidget {
