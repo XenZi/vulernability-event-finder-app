@@ -5,7 +5,8 @@ def user_to_DTO(user: User) -> UserDTO:
             id=user.id or 0,
             email=user.email,
             is_active=user.is_active,
-            creation_date=user.creation_date
+            creation_date=user.creation_date,
+            fcm_token=user.fcm_token
         )
 
 def userList_to_DTOList(users: list[User]) -> list[UserDTO]:

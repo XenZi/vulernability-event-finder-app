@@ -1,3 +1,4 @@
+from http.client import HTTPException
 from fastapi import APIRouter, status
 
 from modules.notifications import notification_service
@@ -24,4 +25,18 @@ async def get_notifications_for_user(session: SessionDep) -> list[Notification]:
     await notification_service.get_data(session)
 
 
+from pydantic import BaseModel
 
+class NotificationRequest(BaseModel):
+    token: str
+    title: str
+    body: str
+
+@router.post("/send_notification")
+async def send_notification(request: NotificationRequest):
+    try:
+        print(f'{request.token}, {request.title}, {request.body}')
+        response = notification_service.send_push_notification(request.token, request.title, request.body)
+        return {"message": "Notification sent", "response": response}
+    except Exception as e:
+        raise HTTPException(status_code=422, detail=str(e))

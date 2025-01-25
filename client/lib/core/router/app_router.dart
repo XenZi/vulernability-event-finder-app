@@ -7,6 +7,8 @@ import 'package:client/features/events/pages/events.page.dart';
 import 'package:client/features/notifications/pages/notifications.page.dart';
 import 'package:go_router/go_router.dart';
 
+
+
 final GoRouter appRouter = GoRouter(
   routes: [
     GoRoute(
@@ -42,5 +44,5 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => AssetListPage(),
     )
   ],
-  initialLocation: '/', // Default route when the app starts
+  initialLocation: '/login', // Default route when the app starts
 );

@@ -6,6 +6,14 @@ from modules.router import api_router
 from fastapi.middleware.cors import CORSMiddleware
 from shared.middlewares import LoggingMiddleware
 from modules.cron.cron_task import scheduler
+import firebase_admin
+from firebase_admin import credentials
+from config.config import settings
+
+
+cred = credentials.Certificate(settings.firebase_creds_path)
+firebase_admin.initialize_app(cred)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -43,4 +51,7 @@ async def handle_all_exceptions(request: Request, exc: BaseHTTPException):
 @app.get("/")
 async def root():
     return {"message": "Hello Worlds"}
+
+
+
 

@@ -8,7 +8,7 @@ import httpx
 from config.config import settings
 from modules.assets import asset_service
 from modules.events.event_repository import write_statement
-from modules.notifications.notification_service import create_notifications
+from modules.notifications.notification_service import create_notifications, gather_notifications_for_push, send_user_notifications
 from shared.api_utils import send_get_request_to_api
 from shared.dependencies import  get_db
 from config.logger_config import logger
@@ -132,11 +132,25 @@ async def event_gather_task():
         await consumers_queue.put(None) 
 
     await consumers_queue.join()
-    sessionDB = next(get_db())
 
-    await create_notifications(sessionDB)
+    await execute_notifications()
+
+
 
     print("All tasks are done finally")
+
+
+async def execute_notifications():
+    session = next(get_db())
+    await create_notifications(session)
+    print("NESTO NOVO KRECE")
+    session = next(get_db())
+    print("NOVO NOVO")
+    token_list = await gather_notifications_for_push(session)
+    print(token_list)
+    print("NEKE NOVE FORE")
+    await send_user_notifications(token_list)
+    print("POSLAO")
 
 
 scheduler = BackgroundScheduler()
@@ -147,3 +161,5 @@ scheduler.add_job(
     id="example_task",
     name="Example task that runs only once",
 )
+
+

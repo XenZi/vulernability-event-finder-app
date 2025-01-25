@@ -67,7 +67,7 @@ async def get_user_by_id_as_dto(session: Session, id: int) -> UserDTO:
         raise EntityNotFound(404, "User not found")
     return mapper.user_to_DTO(user)
 
-async def get_users(session: Session, page: int, page_size: int) -> List[UserDTO]:
+async def get_users(session: Session) -> List[UserDTO]:
     """
     Retrieve a paginated list of users from the database and map them to UserDTO objects.
 
@@ -82,7 +82,7 @@ async def get_users(session: Session, page: int, page_size: int) -> List[UserDTO
     Raises:
         Any exceptions raised by the user repository or mapper functions are propagated.
     """
-    users = await user_repository.get_all_users(session, page, page_size)
+    users = await user_repository.get_all_users(session)
     if not users:
         return []
     return mapper.userList_to_DTOList(users)

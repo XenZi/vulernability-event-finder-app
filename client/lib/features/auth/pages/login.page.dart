@@ -9,6 +9,7 @@ import 'package:client/shared/components/buttons/button_component.dart';
 import 'package:client/shared/components/inputs/textfield_component.dart';
 import 'package:client/shared/components/toast/toast_component.dart';
 import 'package:client/shared/utils/validators.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -21,20 +22,30 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class LoginPageState extends ConsumerState<LoginPage> {
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
   final apiClient = ApiClient();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  
+
 
   void _login(String email, String password) async {
     if (!mounted) return; // Ensure the widget is still mounted at the start.
-
+    var fcmToken = await messaging.getToken();
+    print(fcmToken);
+    print(fcmToken);
+    print(fcmToken);
+    print(fcmToken);
+    print(fcmToken);
+    print(fcmToken);
     try {
       final response = await apiClient.post(
         '/login',
         {
           'email': email,
           'password': password,
+          'fcm_token': fcmToken
         },
         null,
       );
@@ -67,8 +78,12 @@ class LoginPageState extends ConsumerState<LoginPage> {
     super.dispose();
   }
 
+
+
   @override
   Widget build(BuildContext context) {
+
+    
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       body: Padding(

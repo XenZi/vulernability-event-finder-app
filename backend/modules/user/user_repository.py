@@ -138,14 +138,11 @@ async def get_user_by_id(session: Session, id: int) -> User | None:
         raise HTTPException(500, f"Unexpected error: {str(e)}")
 
 
-async def get_all_users(session: Session, page: int = 1, page_size: int = 10) -> list[User]:
+async def get_all_users(session: Session) -> list[User]:
     try:
-        if page < 1 or page_size < 1:
-            raise HTTPException(400, "Page and page size must be positive integers.")
 
-        offset = (page - 1) * page_size
-        select_query = text("""SELECT * FROM user LIMIT :limit OFFSET :offset""")
-        result = session.execute(select_query, {"limit": page_size, "offset": offset}).fetchall()
+        select_query = text("""SELECT * FROM user;""")
+        result = session.execute(select_query).fetchall()
 
         if not result:
             return []

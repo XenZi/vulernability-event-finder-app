@@ -22,4 +22,5 @@ class Settings(BaseSettings):
     external_jwt_token: str
     external_base_url_events: str
     external_base_url_event: str
+    firebase_creds_path: str
 settings = Settings()  # type: ignore

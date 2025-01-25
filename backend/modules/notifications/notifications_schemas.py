@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 class Notification(BaseModel):
     id: int
     user_id: int
+    fcm_token: str
     asset_id: int
     asset_ip: str
     seen: bool
@@ -18,6 +19,7 @@ class NotificationUpdateDTO(BaseModel):
 
 class NotificationData(BaseModel):
     user_id: int
+    fcm_token: str
     asset_id: int
     asset_ip: str
     event_count: int

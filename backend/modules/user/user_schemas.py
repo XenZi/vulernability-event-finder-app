@@ -20,5 +20,6 @@ class UserDTO(BaseModel):
     email: str
     is_active: bool
     creation_date: datetime
+    fcm_token: str
     
 
