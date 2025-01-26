@@ -3,13 +3,13 @@ from config.logger_config import logger
 from firebase_admin import messaging
 from requests import Session
 from modules.notifications import notification_repository
-from modules.notifications.notifications_schemas import Notification, NotificationUpdateDTO
+from modules.notifications.notifications_schemas import NotificationInfo, NotificationUpdateDTO
 from modules.user.user_schemas import UserDTO
 from shared.exceptions import DatabaseFailedOperation, DuplicateEntity, Unauthorized
 from shared.database_operations_utils import format_sql_for_notifications
 
 
-async def get_user_notifications(session: Session, user_id: int) -> list[Notification]:
+async def get_user_notifications(session: Session, user_id: int) -> list[NotificationInfo]:
     notifications = await notification_repository.get_user_notifications(session, user_id)
     if not notifications:
         return []
@@ -31,7 +31,7 @@ async def create_notifications(session: Session):
         print(e)
         raise DatabaseFailedOperation(500, f"Unexpected error during notification creation: {str(e)}")
 
-async def update_notification(session: Session, notification: NotificationUpdateDTO, user: UserDTO) -> Notification:
+async def update_notification(session: Session, notification: NotificationUpdateDTO, user: UserDTO) -> NotificationInfo:
     if notification.user_id != user.id:
         raise Unauthorized(401, 'Unauthorized')
     result = await notification_repository.update_user_notification(session=session, notification=notification)
@@ -97,10 +97,9 @@ async def send_push_notification(token: str, title: str, body: str):
             title=title,
             body=body,
         ),
-        token=token,  # This is the FCM token of the target device
+        token=token,  
     )
 
-    # Send the message
     response = messaging.send(message)
     return response
 

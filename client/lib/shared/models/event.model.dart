@@ -29,10 +29,10 @@ class Event {
 
   factory Event.fromJson(Map<String, dynamic> json) {
     Map<int, String> eventStatuses = {
-      0: 'Discovered',
-      1: 'Acknowledged',
-      2: 'Removed',
-      3: 'False Positive',
+      3: 'Discovered',
+      2: 'Acknowledged',
+      1: 'Removed',
+      0: 'False Positive',
     };
     return Event(
       id: json['id'],

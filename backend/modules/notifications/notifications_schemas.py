@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 
 
 
-class Notification(BaseModel):
+class NotificationInfo(BaseModel):
     id: int
     user_id: int
     fcm_token: str

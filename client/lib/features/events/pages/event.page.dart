@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:client/core/network/api.client.dart';
 import 'package:client/core/theme/app.theme.dart';
 import 'package:client/shared/components/box/box-with-title.widget.dart';
-import 'package:client/shared/components/buttons/button.widget.dart';
 import 'package:client/shared/components/scaffolds/global-scaffold.widget.dart';
 import 'package:client/shared/models/event.model.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +20,6 @@ class EventPage extends StatefulWidget {
 
 class EventPageState extends State<EventPage> {
   final ApiClient apiClient = ApiClient();
-  late int assetId;
   late EventInfo event;
   
 
@@ -35,13 +33,7 @@ class EventPageState extends State<EventPage> {
   }
 
 
-  void _goBack(){
-    context.go("/events/$assetId");
-  }
-
-
   Future<void> fetchEvent() async {
-    assetId = int.parse(widget.goRouterState!.pathParameters['assetId'] as String);
     final eventUUID = widget.goRouterState?.pathParameters['uuid'];
 
     if (eventUUID == null) {
@@ -109,7 +101,7 @@ return GlobalScaffold(
         BoxWithTitle(
           title: "Event Description",
           child: Text(event.description),
-        ),CustomButton(label: "Back", onPressed:() => _goBack() )
+        ),
           ],
         ),
       ),

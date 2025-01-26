@@ -6,9 +6,9 @@ import 'package:client/core/security/secure-storage.component.dart';
 import 'package:client/core/theme/app.theme.dart';
 import 'package:client/features/assets/widgets/asset-cart.widget.dart';
 import 'package:client/shared/components/inputs/bottom_input_modal.dart';
+import 'package:client/shared/components/scaffolds/global-scaffold.widget.dart';
 import 'package:client/shared/components/toast/toast.widget.dart';
 import 'package:client/shared/models/assets.model.dart';
-import 'package:client/shared/components/scaffolds/global-scaffold.widget.dart';
 import 'package:client/shared/utils/validators.dart';
 import 'package:flutter/material.dart';
 
@@ -53,7 +53,7 @@ class AssetListPageState extends State<AssetListPage> {
         await SecureStorage.loadToken(),
       );
 
-      print(response.body);
+      print(json.decode(response.body));
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         setState(() {

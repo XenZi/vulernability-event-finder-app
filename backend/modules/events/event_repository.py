@@ -1,7 +1,7 @@
 
 import datetime
 from http.client import HTTPException
-from modules.events.events_schemas import Event, ReceivedEvent
+from modules.events.events_schemas import Event, EventUpdateDTO, ReceivedEvent
 from shared.dependencies import Session
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
@@ -60,7 +60,7 @@ async def get_event_by_id(session: Session, asset_id: int) -> Event | None:
         raise HTTPException(500, f"Unexpected error: {str(e)}")
     
 
-async def get_all_events_by_asset_id(session: Session, asset_id: int, page: int = 1, page_size: int = 10) -> list[Event]:
+async def get_all_events_by_asset_id(session: Session, asset_id: int, page: int = 1, page_size: int = 400) -> list[Event]:
     try:
         if page < 1 or page_size < 1:
             raise HTTPException(400, "Page and page size must be positive integers.")
@@ -124,6 +124,25 @@ async def get_sorted_filtered_events_for_asset(session: Session, asset_id: int, 
     except Exception as e:
         raise DatabaseFailedOperation(500, f"Unexpected error: {str(e)}")
     
+async def update_event_status(session: Session, event: EventUpdateDTO):
+    try:
+        update_query = text("""#
+            UPDATE Event
+            SET status = :new_status
+            WHERE id = :event_id
+        """)
+        result = session.execute(update_query, {
+            "new_status": event.status.value,
+            "event_id": event.id
+        })
+        session.commit()
+        
+    except SQLAlchemyError as e:
+        session.rollback()
+        raise DatabaseFailedOperation(500, f"Database error: {str(e)}")
+    except Exception as e:
+        session.rollback()
+        raise DatabaseFailedOperation(500, f"Unexpected error: {str(e)}")
 
 
     

@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:client/core/network/api.client.dart';
 import 'package:client/features/events/widgets/event-cart.widgets.dart';
 import 'package:client/shared/components/scaffolds/global-scaffold.widget.dart';

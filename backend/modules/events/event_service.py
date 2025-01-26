@@ -1,6 +1,6 @@
 from datetime import datetime
 from modules.events import event_repository
-from modules.events.events_schemas import Event
+from modules.events.events_schemas import Event, EventUpdateDTO
 from shared.dependencies import Session
 from shared.exceptions import DatabaseFailedOperation, EntityNotFound
 from shared.database_operations_utils import format_sql_for_single_asset
@@ -17,6 +17,10 @@ async def get_event_by_uuid(event_UUID: str):
     data = await send_get_request_for_single(event_UUID)
     event_data = data['data']['data']
     return event_data
+
+async def update_event_by_id(session: Session, event: EventUpdateDTO):
+    print(event)
+    await event_repository.update_event_status(session,event)
     
 
 

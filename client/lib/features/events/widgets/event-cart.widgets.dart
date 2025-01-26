@@ -30,13 +30,12 @@ class EventCard extends StatelessWidget {
       )
       .toList();
 
-// id: int
-//     status: EventStatus
-//     asset_id: int
+
 
   Future<void> _changeEventStatus(
       BuildContext context, EventStatus eventStatus) async {
     try {
+      print(eventStatus.index);
       await apiClient.put(
           "/events/update",
           {
@@ -73,7 +72,7 @@ class EventCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () => {context.go("/event/${event.assetId}/${event.uuid}")},
+        onTap: () => {context.push("/event/${event.assetId}/${event.uuid}")},
         child: Card(
           color: AppTheme.backgroundColor.withOpacity(0.9),
           margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),

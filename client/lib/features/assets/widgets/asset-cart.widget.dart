@@ -1,12 +1,12 @@
 import 'package:client/core/network/api.client.dart';
+import 'package:client/core/theme/app.theme.dart';
+import 'package:client/shared/components/icons/circle-icon.widget.dart';
 import 'package:client/shared/components/selections/bottom-selection-menu.widget.dart';
 import 'package:client/shared/components/toast/toast.widget.dart';
+import 'package:client/shared/models/assets.model.dart';
 import 'package:client/shared/models/menu-option.model.dart';
 import 'package:client/shared/models/priority.enum.dart';
 import 'package:flutter/material.dart';
-import 'package:client/core/theme/app.theme.dart';
-import 'package:client/shared/components/icons/circle-icon.widget.dart';
-import 'package:client/shared/models/assets.model.dart';
 import 'package:go_router/go_router.dart';
 
 class AssetCard extends StatelessWidget {
@@ -33,6 +33,7 @@ class AssetCard extends StatelessWidget {
   Future<void> _changePriorityOfAnAsset(
       BuildContext context, PriorityLevel priority) async {
     try {
+      print(priority.index);
       await apiClient.put(
           "/assets/update",
           {
@@ -103,7 +104,7 @@ class AssetCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () => {context.go("/events/${asset.id}")},
+        onTap: () => {context.push("/events/${asset.id}")},
         child: Card(
           color: AppTheme.backgroundColor.withOpacity(0.9),
           margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),

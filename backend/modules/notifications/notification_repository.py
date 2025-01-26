@@ -3,20 +3,20 @@ from config.logger_config import logger
 from requests import Session
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
-from modules.notifications.notifications_schemas import Notification, NotificationData, NotificationUpdateDTO
+from modules.notifications.notifications_schemas import NotificationInfo, NotificationData, NotificationUpdateDTO
 from modules.user.user_schemas import UserDTO
 from shared.exceptions import DatabaseFailedOperation
 
 
-async def get_user_notification(session: Session, user_id: int) -> list[Notification]:
+async def get_user_notifications(session: Session, user_id: int) -> list[NotificationInfo]:
     try:
-        select_query = text("""SELECT * FROM Notification n WHERE n.user_id=:user_id AND seen=FALSE""")
+        select_query = text("""SELECT * FROM Notification n WHERE n.user_id=:user_id AND seen=FALSE LIMIT 1000""")
         result = session.execute(select_query, {"user_id":user_id}).fetchall()
 
         if not result:
             return []
         
-        notifications = [Notification(**row._mapping) for row in result]
+        notifications = [NotificationInfo(**row._mapping) for row in result]
         return notifications
     except SQLAlchemyError as e:
         raise DatabaseFailedOperation(500, f"Database error: {str(e)}")
@@ -70,7 +70,6 @@ async def update_user_notification(session: Session, notification: NotificationU
             "seen": True,
             "id": notification.id
         })
-        notification.seen=True
         session.commit()
         return notification
     except SQLAlchemyError as e:

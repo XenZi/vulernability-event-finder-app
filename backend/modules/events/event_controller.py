@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status
 
 from modules.events import event_service
-from modules.events.events_schemas import Event
+from modules.events.events_schemas import Event, EventUpdateDTO
 from shared.dependencies import SessionDep, CurrentUser
 
 router = APIRouter(prefix="/events")
@@ -25,3 +25,7 @@ async def get_all_events_by_asset_id(session: SessionDep, asset_id: int, sort_by
 @router.get("/uuid/{uuid}", status_code=status.HTTP_200_OK)
 async def get_event_data(uuid: str):
     return await event_service.get_event_by_uuid(event_UUID=uuid)
+
+@router.put("/update", status_code=status.HTTP_200_OK)
+async def update_event_by_id(session: SessionDep, currentUser: CurrentUser, event: EventUpdateDTO):
+    return await event_service.update_event_by_id(session, event)

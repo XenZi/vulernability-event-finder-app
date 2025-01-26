@@ -126,7 +126,7 @@ async def activate_user(session: Session, email: str):
 
 async def get_user_by_id(session: Session, id: int) -> User | None:
     try: 
-        select_query = text("""SELECT * FROM user WHERE id=:id LIMIT 1""")
+        select_query = text("""SELECT * FROM user WHERE id=:id""")
         result = session.execute(select_query, {"id": id}).first()
         if not result:
             return None

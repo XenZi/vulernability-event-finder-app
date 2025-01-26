@@ -37,7 +37,7 @@ async def get_all_assets_by_user(
     order_by: Optional[str] = Query(None),
     order_by_criteria: Optional[str] = Query(None),
 ) -> list[AssetDTO]:
-    return await asset_service.get_all_assets_for_user(
+    result = await asset_service.get_all_assets_for_user(
         session=session,
         user_id=current_user.id,
         page=page,
@@ -45,6 +45,9 @@ async def get_all_assets_by_user(
         order_by=order_by,
         order_by_criteria=order_by_criteria,
     )
+    print("ASSETS ROW \n\n\n:")
+    print(result)
+    return result
 
 
 @router.get("/", response_model=list[AssetDTO], status_code=status.HTTP_200_OK)

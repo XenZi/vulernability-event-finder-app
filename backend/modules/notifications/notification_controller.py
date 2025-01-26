@@ -2,13 +2,13 @@ from http.client import HTTPException
 from fastapi import APIRouter, status
 
 from modules.notifications import notification_service
-from modules.notifications.notifications_schemas import Notification, NotificationUpdateDTO
+from modules.notifications.notifications_schemas import NotificationInfo, NotificationUpdateDTO
 from shared.dependencies import SessionDep, CurrentUser
 
 router = APIRouter(prefix="/notifications")
 
-@router.get("/user_notifications/", response_model=Notification, status_code=status.HTTP_200_OK)
-async def get_notifications_for_user(session: SessionDep, current_user: CurrentUser) -> list[Notification]:
+@router.get("/user_notifications/", response_model=list[NotificationInfo], status_code=status.HTTP_200_OK)
+async def get_notifications_for_user(session: SessionDep, current_user: CurrentUser) -> list[NotificationInfo]:
     return await notification_service.get_user_notifications(session, current_user.id)
 
 @router.put("/user_notifications/all/", status_code=status.HTTP_200_OK)
@@ -21,7 +21,7 @@ async def update_user_notification(session: SessionDep, notificationDTO: Notific
 
 
 @router.get("/user_notifications/get_data/", status_code=status.HTTP_200_OK)
-async def get_notifications_for_user(session: SessionDep) -> list[Notification]:
+async def get_notifications_for_user(session: SessionDep) -> list[NotificationInfo]:
     await notification_service.get_data(session)
 
 
