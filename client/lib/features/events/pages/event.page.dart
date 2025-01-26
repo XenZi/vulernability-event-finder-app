@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:client/core/network/api.client.dart';
+import 'package:client/core/security/secure-storage.component.dart';
 import 'package:client/core/theme/app.theme.dart';
 import 'package:client/shared/components/box/box-with-title.widget.dart';
 import 'package:client/shared/components/scaffolds/global-scaffold.widget.dart';
@@ -45,7 +46,7 @@ class EventPageState extends State<EventPage> {
     }
     try {
       final response = await apiClient.get('/events/uuid/$eventUUID',
-       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqb2huLmRvZUBleGFtcGxlLmNvbSIsImV4cCI6MjI3MzY2NzMzMTl9.EinBgCnUl9s7ZRrTsRojr7CCbe1eJZJDdfGTacHEtbs");
+        await SecureStorage.loadToken(),);
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
         setState(() {

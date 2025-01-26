@@ -96,8 +96,12 @@ async def write_statement(session: Session, statement: str) -> bool:
    
 async def get_sorted_events_for_asset(session: Session, asset_id: int, sort_by: str, order: str) -> list[Event]:
     try:
-        select_query = text("""SELECT * FROM Event e WHERE e.asset_id=:asset_id ORDER BY :sort_by :order""")
-        result = session.execute(select_query, {"asset_id": asset_id, "sort_by": sort_by, "order": order}).fetchall()
+       
+        
+        select_query = text(f"""SELECT * FROM Event e WHERE e.asset_id=:asset_id ORDER BY {sort_by} {order}""")
+        print(select_query)
+
+        result = session.execute(select_query, {"asset_id": asset_id}).fetchall()
 
         if not result:
             return []
@@ -109,10 +113,11 @@ async def get_sorted_events_for_asset(session: Session, asset_id: int, sort_by: 
     except Exception as e:
         raise DatabaseFailedOperation(500, f"Unexpected error: {str(e)}")
     
-async def get_sorted_filtered_events_for_asset(session: Session, asset_id: int, sort_by: str, order: str, filter_by: str, filter_value) -> list[Event]:
+async def get_filtered_events_for_asset(session: Session, asset_id: int, filter_value) -> list[Event]:
     try:
-        select_query = text("""SELECT * FROM Event e WHERE e.asset_id=:asset_id AND :filter_by=:filter_value ORDER BY :sort_by :order""")
-        result = session.execute(select_query, {"asset_id": asset_id, "filter_by":filter_by, "filter_value":filter_value, "sort_by": sort_by, "order": order}).fetchall()
+       
+        select_query = text("""SELECT * FROM Event e WHERE e.asset_id=:asset_id AND status=:filter_value""")
+        result = session.execute(select_query, {"asset_id": asset_id, "filter_value":filter_value}).fetchall()
 
         if not result:
             return []

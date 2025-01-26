@@ -4,7 +4,7 @@ class NotificationInfo {
   // final String fcmToken;
   final int assetId;
   final String assetIp;
-  final String description;
+  final int eventCount;
   final DateTime creationDate;
 
   NotificationInfo({
@@ -13,7 +13,7 @@ class NotificationInfo {
     // required this.fcmToken,
     required this.assetId,
     required this.assetIp,
-    required this.description,
+    required this.eventCount,
     required this.creationDate,
   });
 
@@ -24,7 +24,7 @@ class NotificationInfo {
       // fcmToken: json['fcm_token'],
       assetId: json['asset_id'],
       assetIp: json['asset_ip'],
-      description: json['description'],
+      eventCount: json['event_count'],
       creationDate: DateTime.parse(json['creation_date']),
     );
   }

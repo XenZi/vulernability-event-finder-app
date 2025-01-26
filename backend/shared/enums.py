@@ -7,7 +7,7 @@ class PriorityLevel(Enum):
     noPriority = 0
 
 class EventStatus(Enum):
-    Discovered = 0
-    Acknowledged = 1
-    Removed = 2
     FalsePositive = 3
+    Removed = 2
+    Acknowledged = 1
+    Discovered = 0

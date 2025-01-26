@@ -63,7 +63,7 @@ class NotificationPageState extends State<NotificationListPage> {
       await apiClient.put(
         '/notifications/user_notifications/all/', 
         {},
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqb2huLmRvZUBleGFtcGxlLmNvbSIsImV4cCI6MjI3Mzc2NDk4Njh9.syHu6AlmV1zGvWCh847AvBLXEITTXt_pOxnksNie8A0");
+        await SecureStorage.loadToken(),);
       if (context.mounted) {
         context.push("/");
       }

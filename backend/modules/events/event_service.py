@@ -1,4 +1,5 @@
 from datetime import datetime
+from shared.enums import EventStatus
 from modules.events import event_repository
 from modules.events.events_schemas import Event, EventUpdateDTO
 from shared.dependencies import Session
@@ -36,10 +37,13 @@ async def get_all_events_by_asset_id(session: Session, asset_id: int) -> list[Ev
     events = await event_repository.get_all_events_by_asset_id(session, asset_id)
     return events
 
-async def get_sorted_filtered_events(session: Session, asset_id: int, sort_by: str, order: str, filter_by: str, filter_value) -> list[Event]:
-    if filter_by == "None":
+async def get_sorted_filtered_events(session: Session, asset_id: int, sort_by: str, order: str) -> list[Event]:
         events = await event_repository.get_sorted_events_for_asset(session,asset_id,sort_by,order)
         return events
-    else:
-        events = await event_repository.get_sorted_filtered_events_for_asset(session,asset_id,sort_by,order,filter_by, filter_value)
+
+
+async def get_filtered_events(session: Session, asset_id, filter_value):
+        int_val = EventStatus[filter_value].value
+        print(int_val)
+        events = await event_repository.get_filtered_events_for_asset(session,asset_id,int_val)
         return events

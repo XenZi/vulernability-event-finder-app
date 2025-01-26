@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 
 enum EventStatus {
-  falsePositive,
-  removed,
+  discovered,
   acknowledged,
-  discovered;
+  removed,
+  falsePositive; 
 
   String get label => {
-        EventStatus.discovered: 'Discovered',
-        EventStatus.acknowledged: 'Acknowledged',
-        EventStatus.removed: 'Removed',
         EventStatus.falsePositive: 'False Positive',
+        EventStatus.removed: 'Removed',
+        EventStatus.acknowledged: 'Acknowledged',
+        EventStatus.discovered: 'Discovered',
       }[this]!;
 
   Color get color => {
-        EventStatus.discovered: Colors.amber,
-        EventStatus.acknowledged: Colors.yellow,
-        EventStatus.removed: Colors.lime,
         EventStatus.falsePositive: Colors.grey,
+        EventStatus.removed: Colors.lime,
+        EventStatus.acknowledged: Colors.yellow,
+        EventStatus.discovered: Colors.amber,
       }[this]!;
 }

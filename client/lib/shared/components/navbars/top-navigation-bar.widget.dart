@@ -27,7 +27,7 @@ class TopNavigationBar extends StatelessWidget implements PreferredSizeWidget {
               icon: const Icon(Icons.notifications, color: AppTheme.titleColor),
               onPressed: () {
                 // Navigate to notifications screen or perform an action
-                context.go('/notifications');
+                context.push('/notifications');
               },
             ),
             if (notificationsCount > 0)

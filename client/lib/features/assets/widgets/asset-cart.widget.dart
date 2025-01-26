@@ -1,4 +1,5 @@
 import 'package:client/core/network/api.client.dart';
+import 'package:client/core/security/secure-storage.component.dart';
 import 'package:client/core/theme/app.theme.dart';
 import 'package:client/shared/components/icons/circle-icon.widget.dart';
 import 'package:client/shared/components/selections/bottom-selection-menu.widget.dart';
@@ -42,7 +43,7 @@ class AssetCard extends StatelessWidget {
             "notification_priority_level": priority.index,
             "user_id": asset.userId,
           },
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqb2huLmRvZUBleGFtcGxlLmNvbSIsImV4cCI6MjI3Mzc2NDk4Njh9.syHu6AlmV1zGvWCh847AvBLXEITTXt_pOxnksNie8A0");
+        await SecureStorage.loadToken(),);
       if (context.mounted) {
         ToastBar.show(
           context,

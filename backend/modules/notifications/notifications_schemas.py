@@ -10,7 +10,7 @@ class NotificationInfo(BaseModel):
     asset_id: int
     asset_ip: str
     seen: bool
-    description: str
+    event_count: int
     creation_date: datetime = datetime.now(timezone.utc)
 
 class NotificationUpdateDTO(BaseModel):

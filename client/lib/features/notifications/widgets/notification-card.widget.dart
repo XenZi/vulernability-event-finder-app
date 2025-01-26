@@ -1,4 +1,5 @@
 import 'package:client/core/network/api.client.dart';
+import 'package:client/core/security/secure-storage.component.dart';
 import 'package:client/core/theme/app.theme.dart';
 import 'package:client/shared/components/toast/toast.widget.dart';
 import 'package:client/shared/models/notification.model.dart';
@@ -23,7 +24,7 @@ class NotificationCard extends StatelessWidget {
           "id":notification.id,
           "user_id":notification.userId
         },
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqb2huLmRvZUBleGFtcGxlLmNvbSIsImV4cCI6MjI3Mzc2NDk4Njh9.syHu6AlmV1zGvWCh847AvBLXEITTXt_pOxnksNie8A0");
+        await SecureStorage.loadToken(),);
       if (context.mounted) {
         context.push("/events/${notification.assetId}");
       }
@@ -64,13 +65,16 @@ class NotificationCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          Text(
-                            notification.description,
-                            style: const TextStyle(color: AppTheme.textColor),
-
+                          Flexible(
+                            child: Text(
+                              "${notification.assetIp} has ${notification.eventCount} discovered events",
+                              style: const TextStyle(color: AppTheme.textColor),
+                              softWrap: true,
+                            ),
                           ),
                         ],
-                      ),
+                      )
+
                     ],
                   ),
                 ),

@@ -10,7 +10,7 @@ from shared.exceptions import DatabaseFailedOperation
 
 async def get_user_notifications(session: Session, user_id: int) -> list[NotificationInfo]:
     try:
-        select_query = text("""SELECT * FROM Notification n WHERE n.user_id=:user_id AND seen=FALSE LIMIT 1000""")
+        select_query = text("""SELECT * FROM Notification n WHERE n.user_id=:user_id AND seen=FALSE ORDER BY event_count DESC LIMIT 10000""")
         result = session.execute(select_query, {"user_id":user_id}).fetchall()
 
         if not result:

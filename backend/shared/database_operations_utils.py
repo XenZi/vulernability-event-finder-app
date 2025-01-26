@@ -51,11 +51,11 @@ def format_sql_for_single_asset(data: list, asset_id, time_occured) -> str:
 
 def format_sql_for_notifications(data: list[NotificationData]) -> str:
     creation_datetime = datetime.now()
-    start = "INSERT INTO Notification\n(user_id, fcm_token, asset_id, asset_ip, seen, description, creation_date)\nVALUES\n"
+    start = "INSERT INTO Notification\n(user_id, fcm_token, asset_id, asset_ip, seen, event_count, creation_date)\nVALUES\n"
     statement = ""
-    end = "AS new_values \n ON DUPLICATE KEY UPDATE \n user_id = new_values.user_id, \n fcm_token = new_values.fcm_token,\n asset_id = new_values.asset_id,\n asset_ip = new_values.asset_ip,\n seen = FALSE,\n description = new_values.description,\n creation_date = new_values.creation_date;"
+    end = "AS new_values \n ON DUPLICATE KEY UPDATE \n user_id = new_values.user_id, \n fcm_token = new_values.fcm_token,\n asset_id = new_values.asset_id,\n asset_ip = new_values.asset_ip,\n seen = FALSE,\n event_count = new_values.event_count,\n creation_date = new_values.creation_date;"
     for idx, datum in enumerate(data):
-        line = f'("{datum.user_id}", "{datum.fcm_token}", "{datum.asset_id}", "{datum.asset_ip}", FALSE, "{datum.asset_ip} has {datum.event_count} discovered events", "{creation_datetime}")'
+        line = f'("{datum.user_id}", "{datum.fcm_token}", "{datum.asset_id}", "{datum.asset_ip}", FALSE, "{datum.event_count}", "{creation_datetime}")'
         if idx < len(data) - 1:
             line += "," 
         statement += (f'{line}\n')

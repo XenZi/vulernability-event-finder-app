@@ -42,7 +42,7 @@ class NavigationComponent extends StatelessWidget {
             .toList(),
         onTap: (index) {
           if (_navItems[index].route != currentPath) {
-            context.go(_navItems[index]
+            context.push(_navItems[index]
                 .route); // Navigate only if the route is different
           }
         },
