@@ -65,11 +65,11 @@ async def send_user_notifications(token_list):
                     body="Your assets have non-acknowledged events xD",
                 ),
                 android=messaging.AndroidConfig(
-                    priority="high",  # High priority for Android
+                    priority="high", 
                 ),
                 apns=messaging.APNSConfig(
                     headers={
-                        "apns-priority": "10",  # High priority for iOS
+                        "apns-priority": "10",
                     }
                 ),
                 tokens=chunk
